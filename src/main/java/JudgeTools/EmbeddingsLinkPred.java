@@ -1,9 +1,8 @@
 package JudgeTools;
-import java.io.IOException;
-import java.util.*;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+
+import java.io.IOException;
 /**
  * For link predication, we use the embeddings trained from training_data to predicate the links that would exist
  * possibly in the test data.
@@ -15,16 +14,30 @@ public class EmbeddingsLinkPred extends LinkPred{
     @Parameter(names = "--path_source_vec", description = "path of source_embedding_vecs")
      String path_source_vec;
 
-    @Parameter(names = "--path_dest_vec",
-            description = "path of dest_embedding_vecs, if not specified, this is a symmetric embedding")
+    @Parameter(names = "--path_dest_vec", description = "if not specified, this is a symmetric embedding")
      String path_dest_vec;
 
     double source_vec[][];
     double dest_vec[][];
 
+    boolean is_directed_embedding;
+    final String NO_DEST_VEC = "no_input_dest";
+
+    @Override
+    void init() throws IOException{
+        super.init();
+        source_vec = JudgeUtils.read_embeddings(path_source_vec);
+        if(path_dest_vec.equals(NO_DEST_VEC))
+            is_directed_embedding = false;
+        else
+            is_directed_embedding = true;
+        if(is_directed_embedding)
+            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
+    }
+
     @Override
     double calculateScore(int from, int to) {
-        if(path_dest_vec.equals("no_input_dest")){
+        if(!is_directed_embedding){
             return vec_multi_vec(source_vec[from], source_vec[to]);
         }
         else{
@@ -43,37 +56,9 @@ public class EmbeddingsLinkPred extends LinkPred{
         };
 
         EmbeddingsLinkPred elp = new EmbeddingsLinkPred();
-        JCommander jCommander;
         if(elp.TEST_MODE)
-            jCommander =  new JCommander(elp, argv);
+            elp.run(argv);
         else
-            jCommander =  new JCommander(elp, args);
-
-        if(elp.help){
-            jCommander.usage();
-            return;
-        }
-        elp.readEmbeddings();
-        elp.calculateAUC();
-    }
-
-    void readEmbeddings() throws IOException {
-        //source_vec = new double[node_num][layer_size];
-        source_vec = JudgeUtils.read_embeddings(path_source_vec);
-        if (!path_dest_vec.equals("no_input_dest")) {
-            // there should be source_vec and dest_vec
-            //dest_vec = new double[node_num][layer_size];
-            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
-        }
-    }
-
-
-    public double vec_multi_vec(double[] vi, double[] vj) {
-        int len = vi.length;
-        double score = 0;
-        for (int kk = 0; kk < len; kk++) {
-            score += vi[kk] * vj[kk];
-        }
-        return score;
+            elp.run(args);
     }
 }

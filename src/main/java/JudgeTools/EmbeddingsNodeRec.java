@@ -1,24 +1,8 @@
 package JudgeTools;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.IntegerConverter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class EmbeddingsNodeRec extends NodeRec{
 
@@ -32,14 +16,38 @@ public class EmbeddingsNodeRec extends NodeRec{
 
     double source_vec[][];
     double dest_vec[][];
+    boolean is_directed_embedding;
+    final String NO_DEST_VEC = "no_input_dest";
 
     @Override
     double calculateScore(int from, int to) {
-        if(path_dest_vec.equals("no_input_dest")){
-            return vec_multi_vec(source_vec[from], source_vec[to]);
+        if(is_directed_embedding){
+            return vec_multi_vec(source_vec[from], dest_vec[to]);
         }
         else{
-            return vec_multi_vec(source_vec[from], dest_vec[to]);
+            return vec_multi_vec(source_vec[from], source_vec[to]);
+        }
+    }
+
+    @Override
+    double[] singleSourceScore(int qv){
+        double score[] = new double[node_num];
+        for(int i = 0; i < node_num; i++)
+            score[i] = calculateScore(qv, i);
+        return score;
+    }
+
+    @Override
+    void init() throws IOException{
+        super.init();
+        source_vec = JudgeUtils.read_embeddings(path_source_vec);
+        if(!path_dest_vec.equals(NO_DEST_VEC))
+            is_directed_embedding = true;
+        else
+            is_directed_embedding = false;
+        if (is_directed_embedding) {
+            // there should be source_vec and dest_vec
+            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
         }
     }
     public static void main(String[] args) throws IOException {
@@ -53,34 +61,10 @@ public class EmbeddingsNodeRec extends NodeRec{
         };
 
         EmbeddingsNodeRec enr = new EmbeddingsNodeRec();
-        JCommander jCommander;
+
         if(enr.TEST_MODE)
-            jCommander =  new JCommander(enr, argv);
+            enr.run(argv);
         else
-            jCommander =  new JCommander(enr, args);
-
-        if(enr.help){
-            jCommander.usage();
-            return;
-        }
-        enr.readEmbeddings();
-        enr.validate();
-    }
-
-    void readEmbeddings() throws IOException {
-        source_vec = JudgeUtils.read_embeddings(path_source_vec);
-        if (!path_dest_vec.equals("no_input_dest")) {
-            // there should be source_vec and dest_vec
-            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
-        }
-    }
-
-    public double vec_multi_vec(double[] vi, double[] vj) {
-        int len = vi.length;
-        double score = 0;
-        for (int kk = 0; kk < len; kk++) {
-            score += vi[kk] * vj[kk];
-        }
-        return score;
+            enr.run(args);
     }
 }

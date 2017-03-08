@@ -1,10 +1,10 @@
 package JudgeTools;
 
-import java.io.IOException;
-import java.util.*;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+
+import java.io.IOException;
+import java.util.*;
 /**
  * For link predication, we use the embeddings trained from training_data to predicate the links that would exist
  * possibly in the test data.
@@ -19,8 +19,14 @@ abstract class LinkPred extends JudgeBase{
 
     abstract double calculateScore(int from, int to);
 
-    void addNegativeEdges(HashSet<Integer> train_graph[], HashSet<Integer> test_graph[],
-                          ArrayList<LineScore> line_score_list) {
+    HashSet<Integer> train_graph[], test_graph[];
+
+    void init() throws IOException{
+        train_graph = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
+        test_graph = JudgeUtils.readEdgeListFromDisk(path_test_data, node_num);
+    }
+
+    void addNegativeEdges(ArrayList<LineScore> line_score_list) {
         /**
          * generate edges that do not exist in train_graph or test_graph and store the corresponding scores in
          * "line_score_list".
@@ -50,7 +56,7 @@ abstract class LinkPred extends JudgeBase{
         }
     }
 
-    void addPositiveEdges(HashSet<Integer> test_graph[], ArrayList<LineScore> line_score_list) {
+    void addPositiveEdges(ArrayList<LineScore> line_score_list) {
         int from = 0, to = 0;
         double score;
         for(int i=0; i< node_num; i++){
@@ -67,11 +73,9 @@ abstract class LinkPred extends JudgeBase{
 
     void calculateAUC()
             throws NumberFormatException, IOException {
-        HashSet<Integer> test_graph[] = JudgeUtils.readEdgeListFromDisk(path_test_data, node_num);
-        HashSet<Integer> train_graph[] = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
         ArrayList<LineScore> line_score_list = new ArrayList<LineScore>();
-        addNegativeEdges(train_graph, test_graph, line_score_list);
-        addPositiveEdges(test_graph, line_score_list);
+        addNegativeEdges(line_score_list);
+        addPositiveEdges(line_score_list);
 
         Collections.sort(line_score_list);
 
@@ -79,7 +83,8 @@ abstract class LinkPred extends JudgeBase{
         long positive_num = 0, negative_num = 0;
         long idx = 0;
         long sum_rank_auc = 0;
-        System.out.println("from to label score");
+        if(debug)
+            System.out.println("from to label score");
         for (LineScore ls : line_score_list) {
             idx++;
             if(debug){
@@ -102,5 +107,15 @@ abstract class LinkPred extends JudgeBase{
                 "Number of negative instance = %d\n" +
                 "Total number of instances we computed is %d\n" +
                 "AUC score is %f\n", positive_num, negative_num, predLineNum, auc_score);
+    }
+
+    void run(String []argv) throws IOException{
+        JCommander jCommander = new JCommander(this, argv);
+        if(this.help){
+            jCommander.usage();
+            return;
+        }
+        init();
+        calculateAUC();
     }
 }

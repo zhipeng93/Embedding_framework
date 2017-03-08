@@ -17,4 +17,13 @@ abstract class JudgeBase{
 
     @Parameter(names = "--help", help = true)
     boolean help = false;
+
+    public double vec_multi_vec(double[] vi, double[] vj) {
+        int len = vi.length;
+        double score = 0;
+        for (int kk = 0; kk < len; kk++) {
+            score += vi[kk] * vj[kk];
+        }
+        return score;
+    }
 }

@@ -1,25 +1,25 @@
 package JudgeTools;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
-import java.util.Set;
 
 public class JudgeUtils{
-
-    public static ArrayList<Integer> readQueryFile(String path) throws IOException{
-        /**
-         * the query file should contains one node index each line exactly.
-         */
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        BufferedReader bw = new BufferedReader(new FileReader(new File(path)));
-        String line;
-        while((line = bw.readLine()) != null){
-            result.add(Integer.parseInt(line));
-
-        }
-        return result;
-    }
+//
+//    public static ArrayList<Integer> readQueryFile(String path) throws IOException{
+//        /**
+//         * the query file should contains one node index each line exactly.
+//         */
+//        ArrayList<Integer> result = new ArrayList<Integer>();
+//        BufferedReader bw = new BufferedReader(new FileReader(new File(path)));
+//        String line;
+//        while((line = bw.readLine()) != null){
+//            result.add(Integer.parseInt(line));
+//        }
+//        return result;
+//    }
     public static HashSet<Integer> getQueryNodes(String path) throws IOException{
         /**
          * return the nodes contained in the test_data.edgelist.

@@ -1,6 +1,5 @@
 package JudgeTools;
 
-import com.beust.jcommander.JCommander;
 import java.io.IOException;
 import java.util.HashSet;
 
@@ -17,9 +16,17 @@ public class CoCitationNodeRec extends NodeRec{
                 (train_graph[from].size() + train_graph[to].size());
     }
 
-    HashSet<Integer> train_graph[];
-    void read_train_graph() throws IOException{
-        train_graph = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
+    @Override
+    void init() throws IOException{
+        super.init();
+    }
+
+    @Override
+    double[] singleSourceScore(int qv){
+        double res[] = new double[node_num];
+        for(int i = 0; i < node_num; i++)
+            res[i] = calculateScore(qv, i);
+        return res;
     }
 
     public static void main(String[] args) throws IOException {
@@ -28,21 +35,12 @@ public class CoCitationNodeRec extends NodeRec{
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
-                "--help"
         };
 
         CoCitationNodeRec cnr = new CoCitationNodeRec();
-        JCommander jCommander;
         if(cnr.TEST_MODE)
-            jCommander =  new JCommander(cnr, argv);
+            cnr.run(argv);
         else
-            jCommander =  new JCommander(cnr, args);
-
-        if(cnr.help){
-            jCommander.usage();
-            return;
-        }
-        cnr.read_train_graph();
-        cnr.validate();
+            cnr.run(args);
     }
 }

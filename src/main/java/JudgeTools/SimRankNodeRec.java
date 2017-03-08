@@ -1,38 +1,36 @@
 package JudgeTools;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
 public class SimRankNodeRec extends NodeRec {
-    @Override
-    double calculateScore(int from, int to) {
-        return 0;
-    }
-
-    HashSet<Integer> train_graph[];
-    HashSet<Integer> reverse_graph[];
     @Parameter(names = "--decay_factor", description = "decay factor of simrank",
             required = false)
     double decay_factor = 0.8;
     @Parameter(names = "--max_step", description = "step of simrank")
     int max_step = 5;
 
-    void read_train_graph() throws IOException {
-        train_graph = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
+    HashSet<Integer> reverse_graph[];
+
+    @Override
+    void init() throws IOException {
+        super.init();
         reverse_graph = genReverseGraph(train_graph);
     }
 
-    public ArrayList<NodeScore> singleTopk(HashSet<Integer> train_graph[], int qv) {
+    @Override
+    double calculateScore(int from, int to) {
+        return 0;
+    }
+
+    @Override
+    public double[] singleSourceScore(int qv){
         /**
          * compute simrank(qv, *) w.r.t qv.
          */
-
         double u[][] = new double[max_step + 1][node_num];
         double v[][] = new double[2][node_num];
         u[0][qv] = 1;
@@ -84,22 +82,8 @@ public class SimRankNodeRec extends NodeRec {
             }
         }
 
-        /**
-         * add the computed scores w.r.t qv to Arraylist single_topk.
-         * edge(qv, x) in train_graph is removed here.
-         */
-        ArrayList<NodeScore> single_topk = new ArrayList<NodeScore>();
-        for (int j = 0; j < node_num; j++) {
-            // if edge(i, j) is included in train_file, j should not be in the predication list.
-            if (qv == j)
-                continue;
-            if (train_graph[qv].contains(j))
-                continue;
+        return v[max_step & 1];
 
-            single_topk.add(new NodeScore(j, v[max_step & 1][j]));
-        }
-        Collections.sort(single_topk);
-        return single_topk;
     }
 
     public static void main(String[] args) throws IOException {
@@ -111,17 +95,9 @@ public class SimRankNodeRec extends NodeRec {
         };
 
         SimRankNodeRec snr = new SimRankNodeRec();
-        JCommander jCommander;
         if(snr.TEST_MODE)
-            jCommander =  new JCommander(snr, argv);
+            snr.run(argv);
         else
-            jCommander =  new JCommander(snr, args);
-
-        if(snr.help){
-            jCommander.usage();
-            return;
-        }
-        snr.read_train_graph();
-        snr.validate();
+            snr.run(args);
     }
 }
