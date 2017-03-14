@@ -1,20 +1,19 @@
 package EmbeddingTools;
 
-import java.awt.image.ImagingOpException;
+import SimMeasures.PPR;
+
 import java.io.IOException;
 
-public class RootedPageRank extends FrameWork{
-    double[] singleSourceSim(int i){
-        double res[] = new double[];
-        return res;
-    }
-    double singlePairSim(int i, int j){
-        return 0;
+public class RPR_FrameWork extends FrameWork{
+    PPR ppr;
+    public RPR_FrameWork(){
+        ppr = new PPR(train_graph, node_num);
     }
 
-    void normalize(double []sim_array){
-
+    double[] singleSourceSim(int qv){
+        return ppr.singleSourceSim(qv);
     }
+
 
     public static void main(String []args) throws IOException{
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
@@ -23,8 +22,12 @@ public class RootedPageRank extends FrameWork{
                 "--node_num", "5242",
                 "--layer_size", "64",
                 "--neg_sample", "5",
-                "--iter", "10",
+                "--iter", "3",
         };
-        new RootedPageRank().run(argv);
+        RPR_FrameWork rpr = new RPR_FrameWork();
+        if(rpr.TEST_MODE)
+            rpr.run(argv);
+        else
+            rpr.run(args);
     }
 }

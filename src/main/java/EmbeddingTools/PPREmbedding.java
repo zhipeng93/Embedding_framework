@@ -38,12 +38,6 @@ public class PPREmbedding extends EmbeddingBase {
      * random generator for sampling
      */
     public static Random r = new Random(0);
-    /**
-     * use to calculate e^i quickly
-     */
-    public static int MAX_EXP = 5;
-    public static double[] expTable;
-    public static int magic = 100;
 
     /**
      * used for measuring the likelihood of sgd.
@@ -55,16 +49,6 @@ public class PPREmbedding extends EmbeddingBase {
     long sample_time = 0;
     long gd_time = 0;
 
-    static {
-        expTable = new double[1000];
-        for (int i = 0; i < 1000; i++) {
-            expTable[i] = Math.exp((i / 1000.0 * 2 - 1) * MAX_EXP); // Precompute the exp() table
-            expTable[i] = expTable[i] / (expTable[i] + 1); // f(x) = x / (x + 1)
-            // \sigmod_x = expTable[(int)((x + MAX_EXP) * (1000 / MAX_EXP / 2))];
-            // if x \in [-MAX_EXP, MAX_EXP]
-        }
-    }
-
     public static void main(String[] args) throws NumberFormatException, IOException {
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
                 "--path_source_vec", "res/arxiv_trainout_ppr_embedding_source_vec",
@@ -73,6 +57,7 @@ public class PPREmbedding extends EmbeddingBase {
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--debug",
         };
         PPREmbedding pprEmbedding = new PPREmbedding();
         JCommander jCommander;
@@ -88,24 +73,58 @@ public class PPREmbedding extends EmbeddingBase {
         pprEmbedding.readGraph();
         pprEmbedding.generate_embeddings();
         pprEmbedding.write_embeddings_to_disk();
-
+    }
+    @Override
+    void init(){
+        /**
+         * This code needs reconstruction.
+         */
+    }
+    @Override
+    void generateEmbeddings(){
+        /**
+         * This code needs reconstruction.
+         */
 
     }
 
-    public void rand_init(double[][] w) {
-        for (int i = 0; i < w.length; i++) {
-            double[] tmp = w[i];
-            for (int j = 0; j < tmp.length; j++) {
-                tmp[j] = (r.nextDouble() - 0.5) / this.layer_size;
+    int sampleAnPositiveEdge(int start){
+        long time_sample_start = System.nanoTime();
+
+        int s = max_step;
+        int id = -1;
+        ArrayList<Integer> tmp_adj = graph[start];
+        /**
+         Here we need to sample the random walk with restart,
+         Which is very expensive because it has to walk on the graph in
+         mulltiple steps, here less than *step = 10*.
+         */
+        while (s-- > 0) {
+            double jump = r.nextDouble();
+            if (jump < jump_factor) {
+                break;
+            } else if (tmp_adj.size() == 0) {
+                // the random walk stops here. =diff=
+                break;
+            } else {
+                id = tmp_adj.get(r.nextInt(tmp_adj.size()));
+                tmp_adj = graph[id];
             }
         }
+
+        long time_sample_end = System.nanoTime();
+        sample_time += time_sample_end - time_sample_start;
+        return id;
     }
 
+    int sampleAnNegativeEdge(int start){
+        return r.nextInt(node_num);
+    }
     public void generate_embeddings() throws IOException {
 
         source_vec = new double[node_num][layer_size];
         dest_vec = new double[node_num][layer_size];
-        rand_init(source_vec);
+        rand_init(source_vec, r);
 
         alpha = starting_alpha;
         for (int kk = 0; kk < ITER_NUM; kk++) {
@@ -117,64 +136,31 @@ public class PPREmbedding extends EmbeddingBase {
                 if (adjs == null || adjs.size() == 0)
                     continue;
                 for (int i = 0; i < SAMPLE; i++) {
-                    // sampled: from a to b
-                    int s = max_step;
-                    int id = -1;
-                    ArrayList<Integer> tmp_adj = adjs;
-                    /**
-                     Here we need to sample the random walk with restart,
-                     Which is very expensive because it has to walk on the graph in
-                     mulltiple steps, here less than *step = 10*.
-                     */
-                    long time_sample_start = System.nanoTime();
-                    while (s-- > 0) {
-                        double jump = r.nextDouble();
-                        if (jump < jump_factor) {
-                            break;
-                        } else if (tmp_adj.size() == 0) {
-                            // the random walk stops here. =diff=
-                            break;
-                        } else {
-                            id = tmp_adj.get(r.nextInt(tmp_adj.size()));
-                            tmp_adj = graph[id];
-                        }
-                    }
-                    long time_sample_end = System.nanoTime();
-                    sample_time += time_sample_end - time_sample_start;
+                    int id = sampleAnPositiveEdge(root);
                     /**
                      * For each positve sample, there are #neg negative samples. The
                      * computations occur is [(3*dim) multi-s + (2*dim) add-s] * #(neg + 1),
                      * which is O(5k*(neg+1))
                      */
-                    long time_gd_start = System.nanoTime();
                     if (id != -1) {
                         /**
                          * Use edge(root, id) to update the loss function.
                          */
                         double weight = 0;
-//                        double weight = graph[id].size() * 1.0 / magic;/* ?? */
                         double[] e = new double[layer_size];
-                        // update as :word a, context b
                         updateVector(source_vec[root], dest_vec[id], 1, weight, e);
 
                         for (int j = 0; j < neg; j++) {
-                            int nid = r.nextInt(node_num);
+                            int nid = sampleAnNegativeEdge(root);
                             if (nid == root)
                                 continue;
-//                            List<Integer> adj = graph[nid];
                             weight = 0;
-//                            if (adj != null && !adj.isEmpty())
-//                                weight = graph[nid].size() * 1.0 / magic;
-//                            else
-//                                continue;
                             updateVector(source_vec[root], dest_vec[nid], 0, weight, e);
                         }
 
                         for (int k = 0; k < layer_size; k++)
                             source_vec[root][k] += e[k];
                     }
-                    long time_gd_end = System.nanoTime();
-                    gd_time += time_gd_end - time_gd_start;
                 }
             }
             if(debug)
@@ -187,6 +173,7 @@ public class PPREmbedding extends EmbeddingBase {
                               double[] e) {
         /** use edge (root, dest) to update source(root), target(dest), which
          * are w[] and c[] respectively.*/
+        long time_gd_start = System.nanoTime();
         double neg_g = calculateGradient(label, w, c, weight);
         for (int i = 0; i < w.length; i++) {
             double tmp_c = c[i];
@@ -194,6 +181,8 @@ public class PPREmbedding extends EmbeddingBase {
             e[i] += neg_g * tmp_c;
             c[i] += neg_g * tmp_w;
         }
+        long time_gd_end = System.nanoTime();
+        gd_time += time_gd_end - time_gd_start;
     }
 
     private double calculateGradient(int label, double[] w, double[] c, double weight) {
@@ -201,7 +190,6 @@ public class PPREmbedding extends EmbeddingBase {
         for (int i = 0; i < this.layer_size; i++)
             f += w[i] * c[i];
         double sigmoid = getSigmoid(f);
-
         g = (label - sigmoid) * alpha;
         /**
          * I do not understand what the author is computing.
@@ -214,25 +202,12 @@ public class PPREmbedding extends EmbeddingBase {
         return g;
     }
 
-    public double getSigmoid(double f) {
-        if (f > MAX_EXP)
-            return 1;
-        else if (f < -MAX_EXP)
-            return -1;
-        else
-            return expTable[(int) (f + MAX_EXP) * (1000 / MAX_EXP / 2)];
-    }
-
     public void write_embeddings_to_disk() throws IOException {
-        EmbeddingUtils.write_array_to_disk(path_source_vec, source_vec);
-        EmbeddingUtils.write_array_to_disk(path_dest_vec, dest_vec);
+        write_array_to_disk(path_source_vec, source_vec);
+        write_array_to_disk(path_dest_vec, dest_vec);
     }
 
     public void readGraph() throws IOException {
-        this.graph = EmbeddingUtils.readEdgeListFromDisk(path_train_data, node_num);
+        this.graph = readEdgeListFromDisk(path_train_data, node_num);
     }
 }
-
-
-
-
