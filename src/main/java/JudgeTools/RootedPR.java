@@ -1,19 +1,17 @@
 package JudgeTools;
 
-import com.beust.jcommander.Parameter;
+import SimMeasures.PPR;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
 public class RootedPR extends NodeRec {
-    @Parameter(names = "--restart_rate", description = "restart rate of rooted-pagerank")
-    double restart_rate = 0.2;
-    @Parameter(names = "--max_step", description = "step of rooted-pagerank")
-    int max_step = 5;
-
+    PPR ppr;
+    public RootedPR(){
+        ppr = new PPR(train_graph, node_num);
+    }
     int out_degree[];
     HashSet<Integer> reverse_graph[];
 
