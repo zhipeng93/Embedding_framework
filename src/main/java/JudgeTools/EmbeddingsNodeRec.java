@@ -16,12 +16,25 @@ public class EmbeddingsNodeRec extends NodeRec{
 
     double source_vec[][];
     double dest_vec[][];
-    boolean is_directed_embedding;
     final String NO_DEST_VEC = "no_input_dest";
+
+    public EmbeddingsNodeRec(String []argv) throws IOException{
+        super(argv);
+        source_vec = read_embeddings(path_source_vec);
+        if(is_directed_embedding())
+            dest_vec = read_embeddings(path_dest_vec);
+    }
+
+    boolean is_directed_embedding(){
+        if(path_dest_vec.equals("") || path_dest_vec.equals(NO_DEST_VEC))
+            return false;
+        else
+            return true;
+    }
 
     @Override
     double calculateScore(int from, int to) {
-        if(is_directed_embedding){
+        if(is_directed_embedding()){
             return vec_multi_vec(source_vec[from], dest_vec[to]);
         }
         else{
@@ -37,19 +50,7 @@ public class EmbeddingsNodeRec extends NodeRec{
         return score;
     }
 
-    @Override
-    void init() throws IOException{
-        super.init();
-        source_vec = JudgeUtils.read_embeddings(path_source_vec);
-        if(!path_dest_vec.equals(NO_DEST_VEC))
-            is_directed_embedding = true;
-        else
-            is_directed_embedding = false;
-        if (is_directed_embedding) {
-            // there should be source_vec and dest_vec
-            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
-        }
-    }
+
     public static void main(String[] args) throws IOException {
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
                 "--path_test_data", "data/arxiv_adj_test.edgelist",
@@ -60,11 +61,9 @@ public class EmbeddingsNodeRec extends NodeRec{
                 "--node_num", "5242",
         };
 
-        EmbeddingsNodeRec enr = new EmbeddingsNodeRec();
-
-        if(enr.TEST_MODE)
-            enr.run(argv);
+        if(JudgeBase.TEST_MODE)
+            new EmbeddingsNodeRec(argv).run();
         else
-            enr.run(args);
+            new EmbeddingsNodeRec(args).run();
     }
 }

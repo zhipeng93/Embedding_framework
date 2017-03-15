@@ -17,14 +17,17 @@ abstract class LinkPred extends JudgeBase{
             description = "ratio of negative samples and test data: #(negative_samples) / #(test_sample)")
     protected double neg_ratio = 3;
 
-    abstract double calculateScore(int from, int to);
-
     HashSet<Integer> train_graph[], test_graph[];
+    public LinkPred(){}
 
-    void init() throws IOException{
-        train_graph = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
-        test_graph = JudgeUtils.readEdgeListFromDisk(path_test_data, node_num);
+    public LinkPred(String []argv) throws IOException{
+        super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
+        test_graph = readEdgeListFromDisk(path_test_data, node_num);
+
     }
+
+    abstract double calculateScore(int from, int to);
 
     void addNegativeEdges(ArrayList<LineScore> line_score_list) {
         /**
@@ -109,13 +112,7 @@ abstract class LinkPred extends JudgeBase{
                 "AUC score is %f\n", positive_num, negative_num, predLineNum, auc_score);
     }
 
-    void run(String []argv) throws IOException{
-        JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
-            jCommander.usage();
-            return;
-        }
-        init();
+    void run() throws IOException{
         calculateAUC();
     }
 }

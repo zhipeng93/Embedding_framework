@@ -3,6 +3,8 @@ package JudgeTools;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
+import java.util.EnumMap;
+
 /**
  * For link predication, we use the embeddings trained from training_data to predicate the links that would exist
  * possibly in the test data.
@@ -19,25 +21,26 @@ public class EmbeddingsLinkPred extends LinkPred{
 
     double source_vec[][];
     double dest_vec[][];
+    public EmbeddingsLinkPred(String []argv) throws IOException{
+        super(argv);
+        source_vec = read_embeddings(path_source_vec);
+        if(is_directed_embedding())
+            dest_vec = read_embeddings(path_dest_vec);
+    }
 
-    boolean is_directed_embedding;
+
     final String NO_DEST_VEC = "no_input_dest";
 
-    @Override
-    void init() throws IOException{
-        super.init();
-        source_vec = JudgeUtils.read_embeddings(path_source_vec);
-        if(path_dest_vec.equals(NO_DEST_VEC))
-            is_directed_embedding = false;
+    boolean is_directed_embedding(){
+        if(path_dest_vec.equals("") || path_dest_vec.equals(NO_DEST_VEC))
+            return false;
         else
-            is_directed_embedding = true;
-        if(is_directed_embedding)
-            dest_vec = JudgeUtils.read_embeddings(path_dest_vec);
+            return true;
     }
 
     @Override
     double calculateScore(int from, int to) {
-        if(!is_directed_embedding){
+        if(is_directed_embedding()){
             return vec_multi_vec(source_vec[from], source_vec[to]);
         }
         else{
@@ -55,10 +58,9 @@ public class EmbeddingsLinkPred extends LinkPred{
                 "--node_num", "5242",
         };
 
-        EmbeddingsLinkPred elp = new EmbeddingsLinkPred();
-        if(elp.TEST_MODE)
-            elp.run(argv);
+        if(JudgeBase.TEST_MODE)
+            new EmbeddingsLinkPred(argv).run();
         else
-            elp.run(args);
+            new EmbeddingsLinkPred(args).run();
     }
 }

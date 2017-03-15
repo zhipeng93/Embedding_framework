@@ -1,13 +1,14 @@
 package EmbeddingTools;
 
-import SimMeasures.PPR;
+
+import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
 public class RPR_FrameWork extends FrameWork{
-    PPR ppr;
+    PersonalizedPageRank ppr;
     public RPR_FrameWork(){
-        ppr = new PPR(train_graph, node_num);
+        ppr = new PersonalizedPageRank(train_graph, node_num);
     }
 
     double[] singleSourceSim(int qv){

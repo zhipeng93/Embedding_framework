@@ -1,25 +1,24 @@
 package JudgeTools;
 
+import SimMeasures.CoCitation;
+
 import java.io.IOException;
 import java.util.HashSet;
 
 public class CoCitationLinkPred extends LinkPred{
 
-    @Override
-    double calculateScore(int from, int to) {
-        /**
-         * intersection / union
-         */
-        HashSet<Integer> tmp_adj_from = (HashSet<Integer>)train_graph[from].clone();
-        tmp_adj_from.retainAll(train_graph[to]);
-        return 1.0 * tmp_adj_from.size() /
-                (train_graph[from].size() + train_graph[to].size());
+    CoCitation coCitation;
+    public CoCitationLinkPred(String argv[]) throws IOException{
+        super(argv);
+        coCitation = new CoCitation(
+                hashsetArray2ArraylistArray(train_graph), node_num);
     }
 
     @Override
-    void init() throws IOException{
-        super.init();
+    double calculateScore(int from, int to) {
+        return coCitation.calculateSim(from, to);
     }
+
     public static void main(String []args) throws IOException{
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
                 "--path_test_data", "data/arxiv_adj_test.edgelist",
@@ -27,12 +26,12 @@ public class CoCitationLinkPred extends LinkPred{
                 "--debug",
                 "--node_num", "5242"
         };
-        CoCitationLinkPred clp = new CoCitationLinkPred();
 
-        if(clp.TEST_MODE)
-            clp.run(argv);
+
+        if(JudgeBase.TEST_MODE)
+            new CoCitationLinkPred(argv).run();
         else
-            clp.run(args);
+            new CoCitationLinkPred(args).run();
     }
 
 }

@@ -1,13 +1,13 @@
 package EmbeddingTools;
 
-import SimMeasures.PPR;
+import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
 public class PPR_MF extends MatrixFactorFramework{
-    PPR ppr;
+    PersonalizedPageRank ppr;
     public PPR_MF() throws IOException{
-        ppr = new PPR(train_graph, node_num);
+        ppr = new PersonalizedPageRank(train_graph, node_num);
     }
     @Override
     double[] singleSourceScore(int qv){

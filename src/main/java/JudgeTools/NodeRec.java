@@ -1,9 +1,11 @@
 package JudgeTools;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -12,6 +14,18 @@ abstract class NodeRec extends JudgeBase {
     int topk = 10;
 
     HashSet<Integer> train_graph[], test_graph[];
+    public NodeRec() throws IOException{
+    }
+    public NodeRec(String []argv) throws IOException{
+        /**
+         * in method(), each method should get prepared for the train_graph reading, reverse_graph, test_graph, etc.
+         */
+        super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
+        test_graph = readEdgeListFromDisk(path_test_data, node_num);
+    }
+
+
 
 //    BufferedWriter bw;
 
@@ -114,7 +128,7 @@ abstract class NodeRec extends JudgeBase {
          */
 
         HashMap<Integer, Set<Integer>> resultSet = new HashMap<Integer, Set<Integer>>();
-        HashSet<Integer> query_nodes = JudgeUtils.getQueryNodes(path_test_data);
+        HashSet<Integer> query_nodes = getQueryNodes(path_test_data);
         for (int i : query_nodes) {
             /**
              * for each node, compute the topk-similar nodes
@@ -154,37 +168,9 @@ abstract class NodeRec extends JudgeBase {
         return resultSet;
     }
 
-    HashSet<Integer>[] genReverseGraph(HashSet<Integer> graph[]) {
-        HashSet<Integer> rs[] = new HashSet[node_num];
-        for (int i = 0; i < node_num; i++)
-            rs[i] = new HashSet<Integer>();
-        for (int i = 0; i < node_num; i++) {
-            Iterator iter = graph[i].iterator();
-            while (iter.hasNext()) {
-                int to = (Integer) iter.next();
-                rs[to].add(i);
-            }
-        }
-        return rs;
-    }
+    void run() throws IOException{
 
-    void init() throws IOException{
-        /**
-         * in method init(), each method should get prepared for the train_graph reading, reverse_graph, test_graph, etc.
-         */
-        train_graph = JudgeUtils.readEdgeListFromDisk(path_train_data, node_num);
-        test_graph = JudgeUtils.readEdgeListFromDisk(path_test_data, node_num);
-    }
-
-
-    void run(String []argv) throws IOException{
-        JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
-            jCommander.usage();
-            return;
-        }
 //        bw = new BufferedWriter(new FileWriter(new File("res/" + this.getClass())));
-        init();
         analysis();
 //        bw.close();
     }
