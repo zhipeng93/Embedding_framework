@@ -19,7 +19,7 @@ import java.io.IOException;
  *
  * If loss of sgd fluctuates, the learning rate is too large.
  *
- * The best for PPR is 0.773 for recall.
+ * The best for PPR is 0.73 for recall.
  * The best for APP is 0.68 for recall.
  */
 public class SgdMF extends MatrixFactorFramework{

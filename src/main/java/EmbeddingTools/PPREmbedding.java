@@ -1,10 +1,10 @@
 package EmbeddingTools;
-import SimMeasures.PersonalizedPageRank;
-import com.beust.jcommander.JCommander;
+
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * This is a sgd, but the order of updating source(w) and dest(con) is not suitable.
@@ -116,7 +116,7 @@ public class PPREmbedding extends EmbeddingBase {
                 int root_size = adjs.size();
                 int sample_num = (int)(SAMPLE * Math.sqrt(root_size) / 10);
                 total_sum += sample_num;
-//                sample_num = SAMPLE;
+                sample_num = SAMPLE;
                 for (int i = 0; i < sample_num; i++) {
                     int id = sampleAnPositiveEdge(root);
                     /**

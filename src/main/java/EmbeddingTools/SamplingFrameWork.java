@@ -110,11 +110,11 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
                 double []e = new double[layer_size];
                 UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]],
-                        1, 1, e);
+                        1, e);
                 for(int neg_id=0; neg_id < neg; neg_id ++){
                     int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
                     UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id],
-                            1, 0, e);
+                            0, e);
                 }
                 for(int lay_id = 0; lay_id < layer_size; lay_id ++)
                     source_vec[from[edge_id]][lay_id] += e[lay_id];
@@ -225,7 +225,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     }
 
 
-    void UpdateVector(double source[], double dest[], int step,
+    void UpdateVector(double source[], double dest[],
                       int label, double []e) {
         /**
          * to maximize sim(u,v)p(v|u) = sim(u, v)log\sigmoid(u*v), the gradient is calculated as:
@@ -233,7 +233,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
          * 2. [1 - \sigmoid(u*v)] * (-u)
          */
         double sum = vecMultiVec(source, dest);
-        double tmp = rio * (getSigmoid(sum) - label) * step;
+        double tmp = rio * (getSigmoid(sum) - label);
 
         sum_gd += Math.abs(tmp);
         /**
