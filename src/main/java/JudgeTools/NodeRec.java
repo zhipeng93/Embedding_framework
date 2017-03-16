@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 abstract class NodeRec extends JudgeBase {
     @Parameter(names = "--topk", description = "number of recommendations for each node")
-    int topk = 10;
+    int topk;
 
     HashSet<Integer> train_graph[], test_graph[];
     public NodeRec() throws IOException{
@@ -24,10 +24,6 @@ abstract class NodeRec extends JudgeBase {
         train_graph = readEdgeListFromDisk(path_train_data, node_num);
         test_graph = readEdgeListFromDisk(path_test_data, node_num);
     }
-
-
-
-//    BufferedWriter bw;
 
     abstract double calculateScore(int from, int to);
 

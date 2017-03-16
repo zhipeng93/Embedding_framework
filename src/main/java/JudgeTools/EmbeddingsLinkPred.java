@@ -41,10 +41,10 @@ public class EmbeddingsLinkPred extends LinkPred{
     @Override
     double calculateScore(int from, int to) {
         if(is_directed_embedding()){
-            return vec_multi_vec(source_vec[from], source_vec[to]);
+            return vec_multi_vec(source_vec[from], dest_vec[to]);
         }
         else{
-            return vec_multi_vec(source_vec[from], dest_vec[to]);
+            return vec_multi_vec(source_vec[from], source_vec[to]);
         }
     }
 

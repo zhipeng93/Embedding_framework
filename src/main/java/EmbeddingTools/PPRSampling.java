@@ -5,10 +5,12 @@ import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
-public class RPR_FrameWork extends FrameWork{
+public class PPRSampling extends SamplingFrameWork{
     PersonalizedPageRank ppr;
-    public RPR_FrameWork(){
+    public PPRSampling(String []argv) throws IOException{
+        super(argv);
         ppr = new PersonalizedPageRank(train_graph, node_num);
+        rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
@@ -23,12 +25,12 @@ public class RPR_FrameWork extends FrameWork{
                 "--node_num", "5242",
                 "--layer_size", "64",
                 "--neg_sample", "5",
-                "--iter", "3",
+                "--iter", "10",
         };
-        RPR_FrameWork rpr = new RPR_FrameWork();
-        if(rpr.TEST_MODE)
-            rpr.run(argv);
+
+        if(EmbeddingBase.TEST_MODE)
+            new PPRSampling(argv).run();
         else
-            rpr.run(args);
+            new PPRSampling(args).run();
     }
 }

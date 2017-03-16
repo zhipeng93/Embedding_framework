@@ -3,19 +3,13 @@ package EmbeddingTools;
 import java.io.IOException;
 
 abstract class FrameWork extends EmbeddingBase{
-
-
-    /**
-     * @param a
-     * @return sim(a, x) in double[]
-     */
+    public FrameWork(String []argv) throws IOException{
+        super(argv);
+    }
+    public FrameWork(){}
     abstract double[] singleSourceSim(int a);
 
-    /**
-     * @param sim_array: the single source similarity array, normalize sim[],
-     *                 which can be a map from [0,1] to [-1, 1], or others.
-     * @return
-     */
+
     void normalize(double []sim_array){
         /**
          * sim(u,v) --> log[sim(u,v) * |V|] - log(neg)], sim(u,v) refers to the ratio of (u,v)
@@ -61,8 +55,8 @@ abstract class FrameWork extends EmbeddingBase{
         }
 
     }
-    static void updateRio(){
-        rio -= 0.01;
+    void updateRio(){
+        this.rio -= 0.01;
     }
     void jointUpdateVector(int u, double []sim_array, int order[]){
         /**
@@ -124,15 +118,5 @@ abstract class FrameWork extends EmbeddingBase{
 
     }
 
-    @Override
-    void init() throws IOException{
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
-        source_vec = new double[node_num][layer_size];
-        rand_init(source_vec, random);
-        if(isDirectedEmbedding()) {
-            dest_vec = new double[node_num][layer_size];
-            rand_init(dest_vec, random);
-        }
-    }
 
 }

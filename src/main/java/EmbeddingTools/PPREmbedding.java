@@ -1,4 +1,5 @@
 package EmbeddingTools;
+import SimMeasures.PersonalizedPageRank;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
@@ -11,13 +12,13 @@ import java.util.*;
  * The batch here means **one** word pair together with **multiple negative pairs**.
  */
 
+/**
+ * Use different number for nodes with different degrees to represent
+ * the different number of random paths, auc increases but recall
+ * decreases. WHy?
+ */
+
 public class PPREmbedding extends EmbeddingBase {
-    /**
-     * parameters for graphs
-     */
-    ArrayList<Integer> graph[];
-    double[][] source_vec;
-    double[][] dest_vec;
     /**
      * parameters for APP
      */
@@ -30,24 +31,22 @@ public class PPREmbedding extends EmbeddingBase {
     @Parameter(names = "--sample", description = "number of samples for each node")
     public static int SAMPLE = 200;
 
-    /**
-     * used for adaptive learning rate of sgd, may not change.
-     */
+    public PPREmbedding(String []argv) throws IOException{
+        super(argv);
+    }
+     /* used for adaptive learning rate of sgd*/
     public static double alpha = 0.0025f;
-    /**
-     * random generator for sampling
-     */
+
+    /* random generator for sampling */
     public static Random r = new Random(0);
 
-    /**
-     * used for measuring the likelihood of sgd.
-     */
+    /* used for measuring the likelihood of sgd. */
     static double sum_gd = 0;
-    /**
-     * variables for testing the time consuming of each part.
-     */
+
+    /* variables for testing the time consuming of each part.*/
     long sample_time = 0;
     long gd_time = 0;
+    int total_sum = 0;
 
     public static void main(String[] args) throws NumberFormatException, IOException {
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
@@ -59,32 +58,18 @@ public class PPREmbedding extends EmbeddingBase {
                 "--iter", "10",
                 "--debug",
         };
-        PPREmbedding pprEmbedding = new PPREmbedding();
-        JCommander jCommander;
-        if (pprEmbedding.TEST_MODE)
-            jCommander = new JCommander(pprEmbedding, argv);
-        else
-            jCommander = new JCommander(pprEmbedding, args);
-
-        if (pprEmbedding.help) {
-            jCommander.usage();
-            return;
+        if(EmbeddingBase.TEST_MODE){
+            new PPREmbedding(argv).run();
         }
-        pprEmbedding.readGraph();
-        pprEmbedding.generate_embeddings();
-        pprEmbedding.write_embeddings_to_disk();
+        else
+            new PPREmbedding(args).run();
     }
     @Override
-    void init(){
+    void generateEmbeddings() throws IOException{
         /**
          * This code needs reconstruction.
          */
-    }
-    @Override
-    void generateEmbeddings(){
-        /**
-         * This code needs reconstruction.
-         */
+        generate_embeddings();
 
     }
 
@@ -93,7 +78,7 @@ public class PPREmbedding extends EmbeddingBase {
 
         int s = max_step;
         int id = -1;
-        ArrayList<Integer> tmp_adj = graph[start];
+        ArrayList<Integer> tmp_adj = train_graph[start];
         /**
          Here we need to sample the random walk with restart,
          Which is very expensive because it has to walk on the graph in
@@ -108,7 +93,7 @@ public class PPREmbedding extends EmbeddingBase {
                 break;
             } else {
                 id = tmp_adj.get(r.nextInt(tmp_adj.size()));
-                tmp_adj = graph[id];
+                tmp_adj = train_graph[id];
             }
         }
 
@@ -121,21 +106,18 @@ public class PPREmbedding extends EmbeddingBase {
         return r.nextInt(node_num);
     }
     public void generate_embeddings() throws IOException {
-
-        source_vec = new double[node_num][layer_size];
-        dest_vec = new double[node_num][layer_size];
-        rand_init(source_vec, r);
-
         alpha = starting_alpha;
         for (int kk = 0; kk < ITER_NUM; kk++) {
             sum_gd = 0;
-//			alpha = Math.max(0.0001, starting_alpha * (iter-kk)/iter);
             for (int root = 0; root < node_num; root++) {
-
-                ArrayList<Integer> adjs = graph[root];
+                ArrayList<Integer> adjs = train_graph[root];
                 if (adjs == null || adjs.size() == 0)
                     continue;
-                for (int i = 0; i < SAMPLE; i++) {
+                int root_size = adjs.size();
+                int sample_num = (int)(SAMPLE * Math.sqrt(root_size) / 10);
+                total_sum += sample_num;
+//                sample_num = SAMPLE;
+                for (int i = 0; i < sample_num; i++) {
                     int id = sampleAnPositiveEdge(root);
                     /**
                      * For each positve sample, there are #neg negative samples. The
@@ -163,8 +145,10 @@ public class PPREmbedding extends EmbeddingBase {
                     }
                 }
             }
-            if(debug)
+            if(debug) {
                 System.out.println("iter:" + kk + ":sum_gradient:" + sum_gd);
+                System.out.printf("total samples %d\n", total_sum);
+            }
         }
         System.out.printf("APP::sample time: %f, gd time: %f\n", sample_time / 1e9, gd_time / 1e9);
     }
@@ -174,40 +158,16 @@ public class PPREmbedding extends EmbeddingBase {
         /** use edge (root, dest) to update source(root), target(dest), which
          * are w[] and c[] respectively.*/
         long time_gd_start = System.nanoTime();
-        double neg_g = calculateGradient(label, w, c, weight);
+        double tmp_g = getSigmoid(vecMultiVec(w, c)) - label;
+        sum_gd += Math.abs(tmp_g);
         for (int i = 0; i < w.length; i++) {
             double tmp_c = c[i];
             double tmp_w = w[i];
-            e[i] += neg_g * tmp_c;
-            c[i] += neg_g * tmp_w;
+            e[i] -= alpha * tmp_g * tmp_c;
+            c[i] -= alpha * tmp_g * tmp_w;
         }
         long time_gd_end = System.nanoTime();
         gd_time += time_gd_end - time_gd_start;
     }
 
-    private double calculateGradient(int label, double[] w, double[] c, double weight) {
-        double f = 0, g;
-        for (int i = 0; i < this.layer_size; i++)
-            f += w[i] * c[i];
-        double sigmoid = getSigmoid(f);
-        g = (label - sigmoid) * alpha;
-        /**
-         * I do not understand what the author is computing.
-         */
-//        if (label == 1) {
-//            global_likelihood += Math.log(sigmoid);
-//        } else
-//            global_likelihood += Math.log(1 - sigmoid);
-        sum_gd += Math.abs(sigmoid - label);
-        return g;
-    }
-
-    public void write_embeddings_to_disk() throws IOException {
-        write_array_to_disk(path_source_vec, source_vec);
-        write_array_to_disk(path_dest_vec, dest_vec);
-    }
-
-    public void readGraph() throws IOException {
-        this.graph = readEdgeListFromDisk(path_train_data, node_num);
-    }
 }

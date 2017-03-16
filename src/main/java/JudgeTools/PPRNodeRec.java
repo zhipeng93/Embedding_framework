@@ -4,9 +4,9 @@ import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
-public class RootedPR extends NodeRec {
+public class PPRNodeRec extends NodeRec {
     PersonalizedPageRank ppr;
-    public RootedPR(String []argv) throws IOException{
+    public PPRNodeRec(String []argv) throws IOException{
         super(argv);
         ppr = new PersonalizedPageRank(
                 hashsetArray2ArraylistArray(train_graph), node_num);
@@ -20,6 +20,13 @@ public class RootedPR extends NodeRec {
 
     @Override
     double[] singleSourceScore(int qv){
+
+//        double rs[] = ppr.singleSourceSim(qv);
+//        int out_deg = train_graph[qv].size();
+//        for(int i=0; i<rs.length; i++)
+//            rs[i] *= Math.pow(out_deg, 1.05);
+//        return rs;
+//        // why this did not improve the effect?
         return ppr.singleSourceSim(qv);
     }
 
@@ -33,9 +40,9 @@ public class RootedPR extends NodeRec {
 
 
         if(JudgeBase.TEST_MODE)
-            new RootedPR(argv).run();
+            new PPRNodeRec(argv).run();
         else
-            new RootedPR(args).run();
+            new PPRNodeRec(args).run();
     }
 
 }

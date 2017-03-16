@@ -12,12 +12,49 @@ abstract class EmbeddingBase{
     double source_vec[][]; /* store the source vectors */
     double dest_vec[][]; /* store the destination vectors */
     ArrayList<Integer> train_graph[];
-    static double rio = 0.15; //learning rate of sgd
-    Random random = new Random(System.currentTimeMillis());
+    double rio = 0.2; //learning rate of sgd
+    static Random random = new Random(System.currentTimeMillis());
 
     static double sum_gd = 0;
+    /**
+     * Efficient to compute sigmoid(f)
+     */
+    public static int MAX_EXP = 5;
+    public static double[] expTable;
+    public EmbeddingBase(){
+    }
+    public EmbeddingBase(String []argv) throws IOException{
+        JCommander jCommander = new JCommander(this, argv);
+        if(this.help){
+            jCommander.usage();
+            return;
+        }
+        source_vec = new double[node_num][layer_size];
+        rand_init(source_vec, random);
+        if(isDirectedEmbedding()) {
+            dest_vec = new double[node_num][layer_size];
+            rand_init(dest_vec, random);
+        }
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
+    }
+    public EmbeddingBase(String []argv, double learning_rate)
+            throws IOException{
+        this(argv);
+        this.rio = learning_rate;
 
-    boolean TEST_MODE = true;
+    }
+    static {
+        expTable = new double[1000];
+        for (int i = 0; i < 1000; i++) {
+            expTable[i] = Math.exp((i / 1000.0 * 2 - 1) * MAX_EXP); // Precompute the exp() table
+            //exp[-5, -4.99, -4,98,...,0,0.01, 0.02,...,4.99]
+            expTable[i] = expTable[i] / (expTable[i] + 1); // f(x) = x / (x + 1)
+            // \sigmod_x = expTable[(int)((x + MAX_EXP) * (1000 / MAX_EXP / 2))];
+            // if x \in [-MAX_EXP, MAX_EXP]
+        }
+    }
+
+    static boolean TEST_MODE = true;
     @Parameter(names = "--path_train_data", description = "path of train_graph.edgelist")
     protected String path_train_data;
 
@@ -49,15 +86,8 @@ abstract class EmbeddingBase{
     protected double starting_alpha = 0.05f;
 
 
-    abstract void init()throws IOException;/* You have to read the train_graphs here.*/
-    abstract void generateEmbeddings();
-    void run(String []argv) throws IOException{
-        JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
-            jCommander.usage();
-            return;
-        }
-        init();
+    abstract void generateEmbeddings() throws IOException;
+    void run() throws IOException{
         long t0 = System.nanoTime();
         generateEmbeddings();
         long t1 = System.nanoTime();
@@ -67,21 +97,7 @@ abstract class EmbeddingBase{
             write_array_to_disk(path_dest_vec, dest_vec);
     }
 
-    /**
-     * Efficient to compute sigmoid(f)
-     */
-    public static int MAX_EXP = 5;
-    public static double[] expTable;
-    static {
-        expTable = new double[1000];
-        for (int i = 0; i < 1000; i++) {
-            expTable[i] = Math.exp((i / 1000.0 * 2 - 1) * MAX_EXP); // Precompute the exp() table
-            //exp[-5, -4.99, -4,98,...,0,0.01, 0.02,...,4.99]
-            expTable[i] = expTable[i] / (expTable[i] + 1); // f(x) = x / (x + 1)
-            // \sigmod_x = expTable[(int)((x + MAX_EXP) * (1000 / MAX_EXP / 2))];
-            // if x \in [-MAX_EXP, MAX_EXP]
-        }
-    }
+
     public double getSigmoid(double f) {
         if (f > MAX_EXP)
             return 1;
@@ -91,6 +107,9 @@ abstract class EmbeddingBase{
             return expTable[(int) (f + MAX_EXP) * (1000 / MAX_EXP / 2)];
     }
     void rand_init(double[][] w, Random random) {
+        /**
+         * This is essential because the initial values are zeros.
+         */
 
         for (int i = 0; i < w.length; i++) {
             double[] tmp = w[i];
