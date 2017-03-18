@@ -1,18 +1,16 @@
 package EmbeddingTools;
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import java.io.*;
 import java.util.ArrayList;
 
 import java.util.Random;
-
-abstract class EmbeddingBase{
+import JudgeTools.MyBase;
+abstract class EmbeddingBase extends MyBase{
     //ArrayList<Integer> [] graph; /* store the graph in an adjlist way */
     double source_vec[][]; /* store the source vectors */
     double dest_vec[][]; /* store the destination vectors */
     ArrayList<Integer> train_graph[];
-    double rio = 0.2; //learning rate of sgd
     static Random random = new Random(System.currentTimeMillis());
 
     static double sum_gd = 0;
@@ -24,11 +22,7 @@ abstract class EmbeddingBase{
     public EmbeddingBase(){
     }
     public EmbeddingBase(String []argv) throws IOException{
-        JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
-            jCommander.usage();
-            return;
-        }
+        super(argv);
         source_vec = new double[node_num][layer_size];
         rand_init(source_vec, random);
         if(isDirectedEmbedding()) {
@@ -53,8 +47,6 @@ abstract class EmbeddingBase{
             // if x \in [-MAX_EXP, MAX_EXP]
         }
     }
-
-    static boolean TEST_MODE = true;
     @Parameter(names = "--path_train_data", description = "path of train_graph.edgelist")
     protected String path_train_data;
 
@@ -67,12 +59,6 @@ abstract class EmbeddingBase{
     @Parameter(names = "--node_num", description = "number of nodes")
     protected int node_num;
 
-    @Parameter(names = "--debug")
-    protected boolean debug = false;
-
-    @Parameter(names = "--help", help = true)
-    boolean help = false;
-
     @Parameter(names = "--layer_size", description = "dimension of embeddings")
     protected int layer_size = 64;
 
@@ -80,10 +66,10 @@ abstract class EmbeddingBase{
     protected int neg = 5;
 
     @Parameter(names = "--iter", description = "number of iterations for sgd")
-    protected int ITER_NUM = 100;
+    protected int ITER_NUM = 10;
 
-    @Parameter(names = "--starting_alpha", description = "the learning rate of sgd")
-    protected double starting_alpha = 0.05f;
+    @Parameter(names = "--learning_rate", description = "the learning rate of sgd")
+    protected double rio = 0.05f;
 
 
     abstract void generateEmbeddings() throws IOException;

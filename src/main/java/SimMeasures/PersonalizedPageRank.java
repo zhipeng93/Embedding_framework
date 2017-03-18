@@ -13,7 +13,7 @@ public class PersonalizedPageRank extends SimBase{
     public PersonalizedPageRank(ArrayList<Integer> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
-        reversedGraph = genReverseGraph(graph, node_num);
+        this.reversedGraph = genReverseGraph(graph, node_num);
         init_out_degree_table();
     }
     public PersonalizedPageRank(ArrayList<Integer> graph[], int node_num,
@@ -21,8 +21,6 @@ public class PersonalizedPageRank extends SimBase{
         this(graph, node_num);
         this.restart_rate = restart_rate;
         this.max_step = max_step;
-
-
     }
     ArrayList<Integer> reversedGraph[];
     int out_degree[];

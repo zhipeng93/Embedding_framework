@@ -28,9 +28,6 @@ public class EmbeddingsLinkPred extends LinkPred{
             dest_vec = read_embeddings(path_dest_vec);
     }
 
-
-    final String NO_DEST_VEC = "no_input_dest";
-
     boolean is_directed_embedding(){
         if(path_dest_vec.equals("") || path_dest_vec.equals(NO_DEST_VEC))
             return false;

@@ -35,7 +35,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                 else{
                     from[idx] = i;
                     to[idx] = j;
-                    weight[idx] = rs[j] * Math.pow(i_deg, 1.05);
+                    weight[idx] = rs[j] * Math.pow(i_deg, 1);
                     idx ++;
                 }
             }
@@ -96,14 +96,20 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
     @Override
     void generateEmbeddings() {
+        long start, end;
+        start = System.nanoTime();
         int p_edge_num = genPositiveTable();
         genAliasTable(p_edge_num);
+        end = System.nanoTime();
 
-        System.out.printf("positive edge num: %d\n", p_edge_num);
+        if(debug) {
+            System.out.printf("similarity computing time is: %f \n",
+                    (end - start) / 1e9);
+            System.out.printf("positive edge num: %d\n", p_edge_num);
+        }
+        start = System.nanoTime();
         for (int iter = 0; iter < ITER_NUM; iter++) {
             sum_gd = 0;
-            System.out.printf("Iteration: %d, learning rate: %f\n", iter, rio);
-
             for (int id = 0; id < MAX_SAMPLE_EDGE_NUM; id++) {
                 // use sim_{shuffle_ids[id]}[x] to update the gradient.
                 int edge_id = sampleAnPositiveEdge(p_edge_num);
@@ -120,10 +126,12 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                     source_vec[from[edge_id]][lay_id] += e[lay_id];
 
             }
-            System.out.printf("sum gd is %f\n", sum_gd);
+            if(debug)
+                System.out.printf("sum gd is %f\n", sum_gd);
         }
-        System.out.printf("sim computing time is %f, gd time is %f\n",
-                sim_computing_time / 1e9, gd_time / 1e9);
+        end = System.nanoTime();
+        if(debug)
+            System.out.printf("gd time is %f\n", (end - start) / 1e9);
     }
 
 //    void jointUpdateVector(int u, double[] sim_array, int order[]) {

@@ -30,7 +30,7 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
 
 
     @Override
-    void generateEmbeddings(){
+    void generateEmbeddings() throws IOException{
         for(int iter = 0; iter < ITER_NUM; iter ++) {
             sum_loss = 0;
 //            rio -= 0.001;

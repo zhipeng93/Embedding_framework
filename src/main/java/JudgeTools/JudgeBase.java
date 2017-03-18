@@ -9,18 +9,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-abstract class JudgeBase{
+abstract class JudgeBase extends MyBase{
     public JudgeBase(String []argv){
-        JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
-            jCommander.usage();
-            return;
-        }
+        super(argv);
         System.out.print(node_num);
     }
     public JudgeBase(){}
 
-    static boolean TEST_MODE = true;
     @Parameter(names = "--path_train_data", description = "path of train_graph.edgelist")
     protected String path_train_data;
 
@@ -29,12 +24,6 @@ abstract class JudgeBase{
 
     @Parameter(names = "--node_num", description = "number of nodes.")
     protected int node_num;
-
-    @Parameter(names = "--debug")
-    protected boolean debug = false;
-
-    @Parameter(names = "--help", help = true)
-    boolean help = false;
 
     public double vec_multi_vec(double[] vi, double[] vj) {
         int len = vi.length;

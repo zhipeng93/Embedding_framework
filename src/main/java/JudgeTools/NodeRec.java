@@ -165,10 +165,12 @@ abstract class NodeRec extends JudgeBase {
     }
 
     void run() throws IOException{
-
-//        bw = new BufferedWriter(new FileWriter(new File("res/" + this.getClass())));
+        long start, end;
+        start = System.nanoTime();
         analysis();
-//        bw.close();
+        end = System.nanoTime();
+        System.out.printf("nodeRec needs time %f\n", (end - start) / 1e9);
+
     }
 }
 

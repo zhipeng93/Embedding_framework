@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="EmbeddingFrameWork">
+    <output-path>$PROJECT_DIR$/out/artifacts/EmbeddingFrameWork</output-path>
+    <root id="archive" name="EmbeddingFrameWork.jar">
+      <element id="module-output" name="cn.pku.daim.ghandzhipeng.GE" />
+      <element id="library" level="project" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.25" />
+      <element id="library" level="project" name="Maven: com.beust:jcommander:1.60" />
+    </root>
+  </artifact>
+</component>

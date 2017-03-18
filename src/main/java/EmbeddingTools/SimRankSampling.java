@@ -2,19 +2,20 @@ package EmbeddingTools;
 
 
 import SimMeasures.PersonalizedPageRank;
+import SimMeasures.SimRank;
 
 import java.io.IOException;
 
-public class PPRSampling extends SamplingFrameWork{
-    PersonalizedPageRank ppr;
-    public PPRSampling(String []argv) throws IOException{
+public class SimRankSampling extends SamplingFrameWork{
+    SimRank simrank;
+    public SimRankSampling(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        simrank = new SimRank(train_graph, node_num);
         rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
-        return ppr.singleSourceSim(qv);
+        return simrank.singleSourceSim(qv);
     }
 
 

@@ -1,20 +1,21 @@
 package EmbeddingTools;
 
 
+import SimMeasures.Katz;
 import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
-public class PPRSampling extends SamplingFrameWork{
-    PersonalizedPageRank ppr;
-    public PPRSampling(String []argv) throws IOException{
+public class KatzSampling extends SamplingFrameWork{
+    Katz katz;
+    public KatzSampling(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        katz = new Katz(train_graph, node_num);
         rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
-        return ppr.singleSourceSim(qv);
+        return katz.singleSourceSim(qv);
     }
 
 

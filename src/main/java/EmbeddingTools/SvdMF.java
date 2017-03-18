@@ -7,6 +7,7 @@ import org.ejml.simple.SimpleMatrix;
 import org.ejml.simple.SimpleSVD;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class SvdMF extends MatrixFactorFramework{
     PersonalizedPageRank ppr;
@@ -33,7 +34,7 @@ public class SvdMF extends MatrixFactorFramework{
     }
 
     @Override
-    void generateEmbeddings(){
+    void generateEmbeddings() throws IOException{
         // generate the embeddings and store them in
         // source_vec and dest_vec
         genScores();
@@ -60,16 +61,42 @@ public class SvdMF extends MatrixFactorFramework{
             a[i] = pmi;
         }
     }
-    void ApplySVD(){
+    void ApplySVD() throws IOException{
         /* apply SVD to score, and store u\sqrt(\sigma) in source_vec
         \sqrt(sigma)v in dest_vec
          */
-//        DenseMatrix64F dmf = new DenseMatrix64F(score);
-//        SimpleMatrix simpleMatrix = SimpleMatrix.wrap(dmf);
-//        SimpleSVD svd = simpleMatrix.svd();
-//        SimpleMatrix u = svd.getU();
-//        SimpleMatrix v = svd.getV();
+        DenseMatrix64F dmf = new DenseMatrix64F(score);
+        SimpleMatrix simpleMatrix = SimpleMatrix.wrap(dmf);
+        SimpleSVD svd = simpleMatrix.svd();
 
+        SimpleMatrix u = svd.getU().extractMatrix(0, node_num, 0, layer_size);
+        SimpleMatrix v = svd.getV().extractMatrix(0, node_num, 0, layer_size);
+        SimpleMatrix w = svd.getW().extractMatrix(0, layer_size, 0, layer_size);
+        // x = U * W * V^T
+
+        for(int i=0; i< layer_size; i++){
+            w.set(i, i, Math.sqrt(w.get(i, i)));
+        }
+        SimpleMatrix u_w = u.mult(w);
+        SimpleMatrix w_v = w.mult(v.transpose());
+//        (u_w.mult(w_v)).print();
+        saveAsEmbeddings(u_w.getMatrix(), path_source_vec);
+        saveAsEmbeddings(w_v.getMatrix(), path_dest_vec);
+    }
+    void saveAsEmbeddings(DenseMatrix64F A , String fileName)
+            throws IOException{
+        PrintStream fileStream = new PrintStream(fileName);
+
+        fileStream.print(A.getNumRows()+" ");
+        fileStream.println(A.getNumCols());
+        for( int i = 0; i < A.numRows; i++ ) {
+            fileStream.print(i+" ");
+            for( int j = 0; j < A.numCols; j++ ) {
+                fileStream.print(A.get(i,j)+" ");
+            }
+            fileStream.println();
+        }
+        fileStream.close();
     }
     public static void main(String args[]) throws IOException{
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
@@ -80,11 +107,14 @@ public class SvdMF extends MatrixFactorFramework{
                 "--neg_sample", "5",
                 "--iter", "3",
         };
-
+        SvdMF svdmf;
         if(EmbeddingBase.TEST_MODE)
-            new SvdMF(argv).run();
+            svdmf = new SvdMF(argv);
         else
-            new SvdMF(args).run();
+            svdmf = new SvdMF(args);
+
+        // This is not consistent with other methods that starts with run()
+        svdmf.generateEmbeddings();
 
     }
 }

@@ -16,7 +16,6 @@ public class EmbeddingsNodeRec extends NodeRec{
 
     double source_vec[][];
     double dest_vec[][];
-    final String NO_DEST_VEC = "no_input_dest";
 
     public EmbeddingsNodeRec(String []argv) throws IOException{
         super(argv);

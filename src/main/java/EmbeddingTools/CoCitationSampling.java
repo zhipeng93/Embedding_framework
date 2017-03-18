@@ -1,20 +1,21 @@
 package EmbeddingTools;
 
 
+import SimMeasures.CoCitation;
 import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
 
-public class PPRSampling extends SamplingFrameWork{
-    PersonalizedPageRank ppr;
-    public PPRSampling(String []argv) throws IOException{
+public class CoCitationSampling extends SamplingFrameWork{
+    CoCitation coCitation;
+    public CoCitationSampling(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        coCitation = new CoCitation(train_graph, node_num);
         rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
-        return ppr.singleSourceSim(qv);
+        return coCitation.singleSourceSim(qv);
     }
 
 

@@ -35,7 +35,7 @@ public class PPREmbedding extends EmbeddingBase {
         super(argv);
     }
      /* used for adaptive learning rate of sgd*/
-    public static double alpha = 0.0025f;
+
 
     /* random generator for sampling */
     public static Random r = new Random(0);
@@ -56,6 +56,10 @@ public class PPREmbedding extends EmbeddingBase {
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--learning_rate", "0.0025f",
+                "--jump_factor", "0.15f",
+                "--max_step", "10",
+                "--sample", "200",
                 "--debug",
         };
         if(EmbeddingBase.TEST_MODE){
@@ -106,7 +110,6 @@ public class PPREmbedding extends EmbeddingBase {
         return r.nextInt(node_num);
     }
     public void generate_embeddings() throws IOException {
-        alpha = starting_alpha;
         for (int kk = 0; kk < ITER_NUM; kk++) {
             sum_gd = 0;
             for (int root = 0; root < node_num; root++) {
@@ -163,8 +166,8 @@ public class PPREmbedding extends EmbeddingBase {
         for (int i = 0; i < w.length; i++) {
             double tmp_c = c[i];
             double tmp_w = w[i];
-            e[i] -= alpha * tmp_g * tmp_c;
-            c[i] -= alpha * tmp_g * tmp_w;
+            e[i] -= rio * tmp_g * tmp_c;
+            c[i] -= rio * tmp_g * tmp_w;
         }
         long time_gd_end = System.nanoTime();
         gd_time += time_gd_end - time_gd_start;
