@@ -1,5 +1,6 @@
 package EmbeddingTools;
 
+import javax.management.MXBean;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -7,7 +8,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     static long gd_time;
     static long sim_computing_time;
     final static int MAX_POSITIVE_EDGE_NUM = 10000000;
-    final static int MAX_SAMPLE_EDGE_NUM = 1000000;
+    static int MAX_SAMPLE_EDGE_NUM = 1000000;
 
     int []from = new int[MAX_POSITIVE_EDGE_NUM];
     int []to = new int[MAX_POSITIVE_EDGE_NUM];
@@ -15,6 +16,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     int []alias;
     double []prob;
     ArrayList<Integer> negative_edges[];
+    static double positive_threshold = 5e-4;
 
 
     int genPositiveTable(){
@@ -29,7 +31,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             for(int j=0; j< node_num; j++){
                 if(rs[j] < 5e-4)
                     negative_edges[i].add(j);
-                if(i==j || rs[j] < 5e-4) {
+                if(i==j || rs[j] < positive_threshold) {
                     continue;
                 }
                 else{
@@ -110,6 +112,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
         start = System.nanoTime();
         for (int iter = 0; iter < ITER_NUM; iter++) {
             sum_gd = 0;
+            MAX_SAMPLE_EDGE_NUM = p_edge_num * 5;
             for (int id = 0; id < MAX_SAMPLE_EDGE_NUM; id++) {
                 // use sim_{shuffle_ids[id]}[x] to update the gradient.
                 int edge_id = sampleAnPositiveEdge(p_edge_num);

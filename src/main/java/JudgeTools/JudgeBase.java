@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-abstract class JudgeBase extends MyBase{
+abstract public class JudgeBase extends MyBase{
     public JudgeBase(String []argv){
         super(argv);
         System.out.print(node_num);
