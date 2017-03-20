@@ -11,7 +11,6 @@ public class KatzSampling extends SamplingFrameWork{
     public KatzSampling(String []argv) throws IOException{
         super(argv);
         katz = new Katz(train_graph, node_num);
-        rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
@@ -27,12 +26,13 @@ public class KatzSampling extends SamplingFrameWork{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--learning_rate", "0.02f",
                 "--debug"
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new PPRSampling(argv).run();
+            new KatzSampling(argv).run();
         else
-            new PPRSampling(args).run();
+            new KatzSampling(args).run();
     }
 }

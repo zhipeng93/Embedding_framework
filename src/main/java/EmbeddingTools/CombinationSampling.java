@@ -10,7 +10,6 @@ public class CombinationSampling extends SamplingFrameWork{
     public CombinationSampling(String []argv) throws IOException{
         super(argv);
         combination = new Combination(train_graph, node_num);
-        rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
@@ -25,6 +24,7 @@ public class CombinationSampling extends SamplingFrameWork{
                 "--node_num", "5242",
                 "--layer_size", "64",
                 "--neg_sample", "5",
+                "--learning_rate", "0.02f",
                 "--iter", "10",
                 "--debug"
         };

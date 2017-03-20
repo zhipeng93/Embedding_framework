@@ -29,7 +29,7 @@ public class PPREmbedding extends EmbeddingBase {
     public static int max_step = 10;
 
     @Parameter(names = "--sample", description = "number of samples for each node")
-    public static int SAMPLE = 200;
+    public static int SAMPLE = 300;
 
     public PPREmbedding(String []argv) throws IOException{
         super(argv);
@@ -56,8 +56,8 @@ public class PPREmbedding extends EmbeddingBase {
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
-                "--learning_rate", "0.0025f",
-                "--jump_factor", "0.15f",
+                "--learning_rate", "0.01f",
+                "--jump_factor", "0.2f",
                 "--max_step", "10",
                 "--sample", "200",
                 "--debug",

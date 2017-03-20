@@ -60,16 +60,16 @@ abstract class EmbeddingBase extends MyBase{
     protected int node_num;
 
     @Parameter(names = "--layer_size", description = "dimension of embeddings")
-    protected int layer_size = 64;
+    protected int layer_size;
 
     @Parameter(names = "--neg_sample", description = "number of negative samples for each node")
-    protected int neg = 5;
+    protected int neg;
 
     @Parameter(names = "--iter", description = "number of iterations for sgd")
-    protected int ITER_NUM = 10;
+    protected int ITER_NUM;
 
     @Parameter(names = "--learning_rate", description = "the learning rate of sgd")
-    protected double rio = 0.05f;
+    protected double rio;
 
 
     abstract void generateEmbeddings() throws IOException;

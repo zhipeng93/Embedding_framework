@@ -11,7 +11,6 @@ public class SimRankSampling extends SamplingFrameWork{
     public SimRankSampling(String []argv) throws IOException{
         super(argv);
         simrank = new SimRank(train_graph, node_num);
-        rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
@@ -27,12 +26,13 @@ public class SimRankSampling extends SamplingFrameWork{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--learning_rate", "0.015f",
                 "--debug"
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new PPRSampling(argv).run();
+            new SimRankSampling(argv).run();
         else
-            new PPRSampling(args).run();
+            new SimRankSampling(args).run();
     }
 }

@@ -13,7 +13,6 @@ public class CycleSampling extends SamplingFrameWork{
         super(argv);
         cycleEmbedding = new CycleEmbedding(path_source_vec,
                 path_dest_vec, node_num);
-        rio = 0.02;
     }
 
     double[] singleSourceSim(int qv){
@@ -29,6 +28,7 @@ public class CycleSampling extends SamplingFrameWork{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--learning_rate", "0.02f",
                 "--debug"
         };
 

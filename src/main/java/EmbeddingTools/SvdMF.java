@@ -105,6 +105,7 @@ public class SvdMF extends MatrixFactorFramework{
                 "--node_num", "5242",
                 "--layer_size", "64",
                 "--neg_sample", "5",
+                "--learning_rate", "0.015f",
                 "--iter", "3",
         };
         SvdMF svdmf;

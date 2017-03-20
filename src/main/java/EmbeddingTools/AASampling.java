@@ -1,20 +1,17 @@
 package EmbeddingTools;
-
-
-import SimMeasures.CoCitation;
-import SimMeasures.PersonalizedPageRank;
+import SimMeasures.AA;
 
 import java.io.IOException;
 
-public class CoCitationSampling extends SamplingFrameWork{
-    CoCitation coCitation;
-    public CoCitationSampling(String []argv) throws IOException{
+public class AASampling extends SamplingFrameWork{
+    AA aa;
+    public AASampling(String []argv) throws IOException{
         super(argv);
-        coCitation = new CoCitation(train_graph, node_num);
+        aa = new AA(train_graph, node_num);
     }
 
     double[] singleSourceSim(int qv){
-        return coCitation.singleSourceSim(qv);
+        return aa.singleSourceSim(qv);
     }
 
 
@@ -25,14 +22,14 @@ public class CoCitationSampling extends SamplingFrameWork{
                 "--node_num", "5242",
                 "--layer_size", "64",
                 "--neg_sample", "5",
-                "--iter", "10",
                 "--learning_rate", "0.02f",
+                "--iter", "10",
                 "--debug"
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new CoCitationSampling(argv).run();
+            new AASampling(argv).run();
         else
-            new CoCitationSampling(args).run();
+            new AASampling(args).run();
     }
 }

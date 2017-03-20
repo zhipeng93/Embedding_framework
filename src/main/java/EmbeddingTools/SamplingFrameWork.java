@@ -1,6 +1,5 @@
 package EmbeddingTools;
 
-import javax.management.MXBean;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -15,22 +14,22 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     double []weight = new double[MAX_POSITIVE_EDGE_NUM];
     int []alias;
     double []prob;
-    ArrayList<Integer> negative_edges[];
+    ArrayList<Integer> positive_edges[];
     static double positive_threshold = 5e-4;
 
 
     int genPositiveTable(){
-        negative_edges = new ArrayList[node_num];
+        positive_edges = new ArrayList[node_num];
         for(int i=0; i<node_num; i++)
-            negative_edges[i] = new ArrayList<Integer>();
+            positive_edges[i] = new ArrayList<Integer>();
 
         int idx = 0;
         for(int i=0; i< node_num; i++){
             int i_deg = train_graph[i].size();
             double rs[] = singleSourceSim(i);
             for(int j=0; j< node_num; j++){
-                if(rs[j] < 5e-4)
-                    negative_edges[i].add(j);
+//                if(rs[j] < 5e-4)
+//                    negative_edges[i].add(j);
                 if(i==j || rs[j] < positive_threshold) {
                     continue;
                 }
@@ -39,6 +38,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                     to[idx] = j;
                     weight[idx] = rs[j] * Math.pow(i_deg, 1);
                     idx ++;
+                    positive_edges[i].add(j);
                 }
             }
         }
@@ -53,25 +53,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     }
 
     abstract double[] singleSourceSim(int a);
-
-
-
-//    void normalize(double[] sim_array) {
-//        /**
-//         * * sim(u,v) --> log[sim(u,v) * |V|] - log(neg)], sim(u,v) refers to the ratio of (u,v)
-//         * in the whole corpus, not a similarity score.
-//         */
-//        for (int i = 0; i != sim_array.length; i++) {
-//            sim_array[i] = translate(sim_array[i]);
-//        }
-//    }
-//
-//    double translate(double sim) {
-//        if (sim < 1e-4)
-//            return 0;
-//        else
-//            return sim;
-//    }
 
     int sampleAnPositiveEdge(int edge_num){
 //        double max_prob = prob[edge_num - 1];
@@ -118,12 +99,10 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                 int edge_id = sampleAnPositiveEdge(p_edge_num);
 
                 double []e = new double[layer_size];
-                UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]],
-                        1, e);
+                UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]], 1, e);
                 for(int neg_id=0; neg_id < neg; neg_id ++){
                     int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
-                    UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id],
-                            0, e);
+                    UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id], 0, e);
                 }
                 for(int lay_id = 0; lay_id < layer_size; lay_id ++)
                     source_vec[from[edge_id]][lay_id] += e[lay_id];
@@ -184,9 +163,10 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 //    }
 
     int sampleAnNegativeEdge(int root) {
-        int x_size = negative_edges[root].size();
-        int y = random.nextInt(x_size);
-        return negative_edges[root].get(y);
+        int y = random.nextInt(node_num);
+        while (positive_edges[root].contains(y))
+            y = random.nextInt(node_num);
+        return y;
     }
 
     void genAliasTable(int edge_num) {

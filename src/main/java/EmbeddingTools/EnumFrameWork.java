@@ -1,5 +1,5 @@
 package EmbeddingTools;
-abstract class EnumFrameWork extends FrameWork{
+abstract class EnumFrameWork extends EmbeddingBase{
     abstract double[] singleSourceSim(int qv);
 
 }

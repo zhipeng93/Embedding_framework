@@ -27,7 +27,6 @@ public class SgdMF extends MatrixFactorFramework{
     public SgdMF(String []argv) throws IOException{
         super(argv);
         ppr = new PersonalizedPageRank(train_graph, node_num);
-        rio = 0.015;
     }
 
     @Override
@@ -55,6 +54,8 @@ public class SgdMF extends MatrixFactorFramework{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
+                "--learning_rate", "0.015f",
+                "--debug"
         };
 
         if(EmbeddingBase.TEST_MODE)
