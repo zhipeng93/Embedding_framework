@@ -13,7 +13,6 @@ abstract class EmbeddingBase extends MyBase{
     ArrayList<Integer> train_graph[];
     static Random random = new Random(System.currentTimeMillis());
 
-    static double sum_gd = 0;
     /**
      * Efficient to compute sigmoid(f)
      */

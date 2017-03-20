@@ -5,8 +5,25 @@ import com.beust.jcommander.Parameter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 abstract class SamplingFrameWork extends EmbeddingBase {
+    @Parameter(names = "--thread_num", description = "number of threads")
+    protected int THREAD_NUM;
+    @Parameter(names = "--threshold", description = "threshold for sampling framework")
+    protected static double positive_threshold;
+
+    public SamplingFrameWork(String[] argv) throws IOException {
+        super(argv);
+        System.out.printf("threshold is %f\n", positive_threshold);
+    }
+
+    public SamplingFrameWork() {
+    }
+    static int SAMPLE_EDGE_NUM = 1000000; // number of samples per iter.
+    static double delta_gd = 0.0001;
     /**
      * variables to store the positive edges and alias table
      */
@@ -16,24 +33,16 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     int []alias;
     double []prob;
     ArrayList<Integer> positive_edges[];
-
-    @Parameter(names = "--threshold", description = "threshold for sampling framework")
-    protected static double positive_threshold = 5e-4;
-
-    @Parameter(names = "--samplePerNodePair", description = "sample number for each node-pair during each iteration.")
-    protected static int num_per_node_pair_per_iter = 5;
-
+    ArrayList<PositiveEdge> tmp_positive_edges;
 
     int genPositiveTable(){
-
-        ArrayList<Integer> from_list = new ArrayList<Integer>();
-        ArrayList<Integer> to_list = new ArrayList<Integer>();
-        ArrayList<Double> weight_list = new ArrayList<Double>();
-
         positive_edges = new ArrayList[node_num];
         for(int i=0; i<node_num; i++)
             positive_edges[i] = new ArrayList<Integer>();
 
+        ArrayList<Integer> from_list = new ArrayList<Integer>();
+        ArrayList<Integer> to_list = new ArrayList<Integer>();
+        ArrayList<Double> weight_list = new ArrayList<Double>();
         int idx = 0;
         for(int i=0; i< node_num; i++){
             int i_deg = train_graph[i].size();
@@ -51,7 +60,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                 }
             }
         }
-
         from = arrayList2IntArray(from_list);
         to = arrayList2IntArray(to_list);
         weight = arrayList2DoubleArray(weight_list);
@@ -77,12 +85,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
         return rs;
     }
 
-    public SamplingFrameWork(String[] argv) throws IOException {
-        super(argv);
-    }
-
-    public SamplingFrameWork() {
-    }
 
     abstract double[] singleSourceSim(int a);
 
@@ -110,26 +112,47 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             System.out.printf("positive edge num: %d\n", p_edge_num);
         }
         start = System.nanoTime();
-        for (int iter = 0; iter < ITER_NUM; iter++) {
-            sum_gd = 0;
-            int SAMPLE_EDGE_NUM = p_edge_num * num_per_node_pair_per_iter;
-            for (int id = 0; id < SAMPLE_EDGE_NUM; id++) {
-                // use sim_{shuffle_ids[id]}[x] to update the gradient.
-                int edge_id = sampleAnPositiveEdge(p_edge_num);
-
-                double []e = new double[layer_size];
-                UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]], 1, e);
-                for(int neg_id=0; neg_id < neg; neg_id ++){
-                    int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
-                    UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id], 0, e);
-                }
-                for(int lay_id = 0; lay_id < layer_size; lay_id ++)
-                    source_vec[from[edge_id]][lay_id] += e[lay_id];
-
-            }
-            if(debug)
-                System.out.printf("sum gd is %f\n", sum_gd);
+        /**
+         * TO DO parallel updating source_vec[][], dest_vec[][], no-lock
+         */
+        ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUM);
+        for(int threadId = 0; threadId < THREAD_NUM; threadId ++){
+            threadPool.execute(new UpdateViaSampling(threadId, SAMPLE_EDGE_NUM, p_edge_num));
         }
+        threadPool.shutdown();
+        while (!threadPool.isTerminated()) {
+            try {
+                threadPool.awaitTermination(1, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                System.out.println("Waiting.");
+                e.printStackTrace();
+            }
+        }
+//        for (int iter = 0; iter < ITER_NUM; iter++) {
+//            for (int id = 0; id < SAMPLE_EDGE_NUM; id++) {
+//                // use sim_{shuffle_ids[id]}[x] to update the gradient.
+//                int edge_id = sampleAnPositiveEdge(p_edge_num);
+//
+//                double []e = new double[layer_size];
+//                UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]], 1, e);
+//                for(int neg_id=0; neg_id < neg; neg_id ++){
+//                    int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
+//                    UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id], 0, e);
+//                }
+//                for(int lay_id = 0; lay_id < layer_size; lay_id ++)
+//                    source_vec[from[edge_id]][lay_id] += e[lay_id];
+//
+//            }
+//            if(debug)
+//                System.out.printf("sum gd is %f\n", sum_gd);
+//
+//            if(Math.abs(sum_gd - last_sum_gd) < delta_gd)
+//                break;
+//            else{
+//
+//
+//            }
+//        }
         end = System.nanoTime();
         if(debug)
             System.out.printf("gd time is %f\n", (end - start) / 1e9);
@@ -190,17 +213,18 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     }
 
 
-    void UpdateVector(double source[], double dest[],
+    double UpdateVector(double source[], double dest[],
                       int label, double []e) {
         /**
          * to maximize sim(u,v)p(v|u) = sim(u, v)log\sigmoid(u*v), the gradient is calculated as:
          * 1. [1 - \sigmoid(u*v)] * (-v)
          * 2. [1 - \sigmoid(u*v)] * (-u)
+         * return "part gd"
          */
         double sum = vecMultiVec(source, dest);
         double tmp = rio * (getSigmoid(sum) - label);
 
-        sum_gd += Math.abs(tmp);
+//        sum_gd += Math.abs(tmp);
         /**
          * u = u1 - tmp * (-v1)
          * v = v1 - tmp * (-u1)
@@ -214,6 +238,69 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 //            source[i] -= tmp * tmp_dest;
 //            dest[i] -= tmp * tmp_source;
         }
+        return Math.abs(tmp);
 
+    }
+    public class UpdateViaSampling implements Runnable{
+        int threadID, sampleNum, total_edge_num;
+        double _sum_gd=0, _last_gd=Double.MAX_VALUE;
+        public UpdateViaSampling(int threadID, int sampleNum, int total_edge_num){
+            this.threadID = threadID;
+            this.sampleNum = sampleNum;
+            this.total_edge_num = total_edge_num;
+        }
+        public void run(){
+            for(int iter = 0; iter < ITER_NUM; iter ++) {
+                for (int i = 0; i < sampleNum; i++) {
+                    updateOnce();
+                }
+                if(debug)
+                    System.out.printf("Thread %d _sum_gd is %f\n", threadID, _sum_gd);
+
+                if(Math.abs(_sum_gd - _last_gd) < delta_gd)
+                    break;
+                else{
+                    _last_gd = _sum_gd;
+                    _sum_gd = 0;
+                }
+            }
+        }
+        public void updateOnce(){
+            int edge_id = sampleAnPositiveEdge(total_edge_num);
+            double []e = new double[layer_size];
+            _sum_gd += UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]], 1, e);
+            for(int neg_id=0; neg_id < neg; neg_id ++){
+                int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
+                _sum_gd += UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id], 0, e);
+            }
+            for(int lay_id = 0; lay_id < layer_size; lay_id ++)
+                source_vec[from[edge_id]][lay_id] += e[lay_id];
+        }
+    }
+    public class GenPositiveEdge implements Runnable{
+        int threadId;
+        public GenPositiveEdge(int threadId){
+            this.threadId = threadId;
+        }
+        public void run(){
+            /**
+             * len = node_num / threadId + 1;
+             * answer singelSourceSim[qv], qv \in
+             * [threadId * len, min(threadId *(len+1), node_num)
+             */
+            int len = node_num / THREAD_NUM + 1;
+            int start = threadId * len;
+            int end = Math.min((threadId + 1) * len, node_num);
+            for(int i=start; i<end; i++){
+                double []rs = singleSourceSim(i);
+                for(int j = 0; j< node_num; j++) {
+                    if (i == j || rs[j] < positive_threshold) {
+                        continue;
+                    } else {
+                        tmp_positive_edges.add(new PositiveEdge(i, j, rs[j]));
+                    }
+                }
+            }
+        }
     }
 }

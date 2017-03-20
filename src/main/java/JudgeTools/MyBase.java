@@ -11,7 +11,7 @@ abstract public class MyBase{
     @Parameter(names = "--help", help = true)
     public boolean help = false;
 
-    public static boolean TEST_MODE = true;
+    public static boolean TEST_MODE = false;
     public static String NO_DEST_VEC = "no_input_dest";
     public MyBase(){}
     public MyBase(String argv[]){
