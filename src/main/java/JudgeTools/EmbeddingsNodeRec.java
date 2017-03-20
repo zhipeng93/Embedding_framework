@@ -54,7 +54,9 @@ public class EmbeddingsNodeRec extends NodeRec{
         String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
                 "--path_test_data", "data/arxiv_adj_test.edgelist",
                 "--path_source_vec", "res/arxiv_trainout_ppr_embedding_source_vec",
+//                "--path_dest_vec", "res/arxiv_trainout_ppr_embedding_dest_vec",
                 "--path_dest_vec", "no_input_dest",
+                // this really matters.
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
