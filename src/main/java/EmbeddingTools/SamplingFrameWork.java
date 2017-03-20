@@ -1,24 +1,35 @@
 package EmbeddingTools;
 
+import com.beust.jcommander.Parameter;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 abstract class SamplingFrameWork extends EmbeddingBase {
-    static long gd_time;
-    static long sim_computing_time;
-    final static int MAX_POSITIVE_EDGE_NUM = 10000000;
-    static int MAX_SAMPLE_EDGE_NUM = 1000000;
-
-    int []from = new int[MAX_POSITIVE_EDGE_NUM];
-    int []to = new int[MAX_POSITIVE_EDGE_NUM];
-    double []weight = new double[MAX_POSITIVE_EDGE_NUM];
+    /**
+     * variables to store the positive edges and alias table
+     */
+    int []from;
+    int []to;
+    double []weight;
     int []alias;
     double []prob;
     ArrayList<Integer> positive_edges[];
-    static double positive_threshold = 5e-4;
+
+    @Parameter(names = "--threshold", description = "threshold for sampling framework")
+    protected static double positive_threshold = 5e-4;
+
+    @Parameter(names = "--samplePerNodePair", description = "sample number for each node-pair during each iteration.")
+    protected static int num_per_node_pair_per_iter = 5;
 
 
     int genPositiveTable(){
+
+        ArrayList<Integer> from_list = new ArrayList<Integer>();
+        ArrayList<Integer> to_list = new ArrayList<Integer>();
+        ArrayList<Double> weight_list = new ArrayList<Double>();
+
         positive_edges = new ArrayList[node_num];
         for(int i=0; i<node_num; i++)
             positive_edges[i] = new ArrayList<Integer>();
@@ -28,21 +39,42 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             int i_deg = train_graph[i].size();
             double rs[] = singleSourceSim(i);
             for(int j=0; j< node_num; j++){
-//                if(rs[j] < 5e-4)
-//                    negative_edges[i].add(j);
                 if(i==j || rs[j] < positive_threshold) {
                     continue;
                 }
                 else{
-                    from[idx] = i;
-                    to[idx] = j;
-                    weight[idx] = rs[j] * Math.pow(i_deg, 1);
+                    from_list.add(i);
+                    to_list.add(j);
+                    weight_list.add(rs[j] * Math.pow(i_deg, 1));
                     idx ++;
                     positive_edges[i].add(j);
                 }
             }
         }
+
+        from = arrayList2IntArray(from_list);
+        to = arrayList2IntArray(to_list);
+        weight = arrayList2DoubleArray(weight_list);
+
         return idx;
+    }
+
+    double[] arrayList2DoubleArray(ArrayList<Double> list){
+        double []rs = new double[list.size()];
+        Iterator iter = list.iterator();
+        int idx = 0;
+        while(iter.hasNext())
+            rs[idx ++] = (Double)iter.next();
+        return rs;
+    }
+
+    int[] arrayList2IntArray(ArrayList<Integer> list){
+        int []rs = new int[list.size()];
+        Iterator iter = list.iterator();
+        int idx = 0;
+        while(iter.hasNext())
+            rs[idx ++] = (Integer) iter.next();
+        return rs;
     }
 
     public SamplingFrameWork(String[] argv) throws IOException {
@@ -55,19 +87,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     abstract double[] singleSourceSim(int a);
 
     int sampleAnPositiveEdge(int edge_num){
-//        double max_prob = prob[edge_num - 1];
-//        double x = random.nextDouble() * max_prob;
-//        int left = 0, right = edge_num - 1;
-//        while(left < right){
-//            int mid = (left + right + 1) / 2;
-//            if(prob[mid] < x){
-//                left = mid + 1;
-//            }
-//            else {
-//                right = mid;
-//            }
-//        }
-//        return left;
         int k = (int)(edge_num * random.nextDouble());
         double tmp = random.nextDouble();
         if(tmp < prob[k])
@@ -93,8 +112,8 @@ abstract class SamplingFrameWork extends EmbeddingBase {
         start = System.nanoTime();
         for (int iter = 0; iter < ITER_NUM; iter++) {
             sum_gd = 0;
-            MAX_SAMPLE_EDGE_NUM = p_edge_num * 5;
-            for (int id = 0; id < MAX_SAMPLE_EDGE_NUM; id++) {
+            int SAMPLE_EDGE_NUM = p_edge_num * num_per_node_pair_per_iter;
+            for (int id = 0; id < SAMPLE_EDGE_NUM; id++) {
                 // use sim_{shuffle_ids[id]}[x] to update the gradient.
                 int edge_id = sampleAnPositiveEdge(p_edge_num);
 
@@ -116,51 +135,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             System.out.printf("gd time is %f\n", (end - start) / 1e9);
     }
 
-//    void jointUpdateVector(int u, double[] sim_array, int order[]) {
-//        /**
-//         * use (u,x) to update vector source[u] and dest[x], the update order is specified in order[].
-//         *
-//         * compute the model by jointly optimize the model. This can also be implemented via sampling
-//         * with alias table.
-//         * Also, the normalize function is very important.
-//         */
-//        for (int i = 0; i < node_num; i++) {
-//            int v = order[i];
-//            if (v == u)
-//                continue;
-//            // use sim(u, v) to update source_vec[u] and dest_vec[v]
-//            if (sim_array[v] > 0)
-//                batchUpdateVector(u, v, sim_array[v] * 200, 1);
-//            else {
-////                    if(random.nextDouble() < 0.2){
-////                        UpdateVector(source_vec[u], dest_vec[v], 1, 0);
-////                    }
-//                //cut off
-//            }
-//
-//        }
-
-//    }
-//
-//    void batchUpdateVector(int source, int dest, double sim, int label) {
-//        /**
-//         * compute following the strict deriv, Which is a bactch form. Maybe the most important word
-//         * pairs should be precomputed and stored. As a result, here we can use this.
-//         *
-//         * Both from and to should be stored. Maybe in a CSR format.
-//         */
-//        int batch_size = 1, idx = 0;
-//        int batch_num = (int) (sim / batch_size);
-//        while (idx < batch_num) {
-//            idx++;
-//            UpdateVector(source_vec[source], dest_vec[dest], batch_size, 1);
-//            for (int i = 0; i < neg; i++) {
-//                int neg_id = sampleAnNegativeEdge(source);
-//                UpdateVector(source_vec[source], dest_vec[neg_id], 1, 0);
-//            }
-//        }
-//
-//    }
 
     int sampleAnNegativeEdge(int root) {
         int y = random.nextInt(node_num);

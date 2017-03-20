@@ -11,6 +11,8 @@ public class CoCitationSampling extends SamplingFrameWork{
     public CoCitationSampling(String []argv) throws IOException{
         super(argv);
         coCitation = new CoCitation(train_graph, node_num);
+        System.out.printf("threshold is %f\n", positive_threshold);
+        System.out.printf("#sample Per NodePair is %d\n", num_per_node_pair_per_iter);
     }
 
     double[] singleSourceSim(int qv){
