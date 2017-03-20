@@ -109,7 +109,8 @@ abstract class LinkPred extends JudgeBase{
         System.out.printf("Number of positive instance = %d,\n" +
                 "Number of negative instance = %d\n" +
                 "Total number of instances we computed is %d\n" +
-                "AUC score is %f\n", positive_num, negative_num, predLineNum, auc_score);
+                "%s AUC is %f\n", positive_num, negative_num, predLineNum,
+                this.getClass(), auc_score);
     }
 
     void run() throws IOException{

@@ -55,8 +55,8 @@ abstract class NodeRec extends JudgeBase {
                 _truth_num = _truth.size();
                 _pred.retainAll(_truth);
                 _hit = _pred.size();
-                System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n", _pred_num, _truth_num,
-                        _hit, 1.0 * _hit / _pred_num);
+                System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n",
+                        _pred_num, _truth_num, _hit, 1.0 * _hit / _pred_num);
 
             }
         }
@@ -80,8 +80,8 @@ abstract class NodeRec extends JudgeBase {
         double recall = 1.0 * hit / truth;
         double precision = 1.0 * hit / preds;
         double f1 = 2 * precision * recall / (precision + recall);
-        System.out.printf("Precision=%f, recall=%f, F1=%f (truth:%d, pred:%d, hit:%d)\n",
-                precision, recall, f1, truth, preds, hit);
+        System.out.printf("%s Precision=%f, recall=%f, F1=%f (truth:%d, pred:%d, hit:%d)\n",
+                this.getClass(), precision, recall, f1, truth, preds, hit);
         test_reader.close();
     }
 
