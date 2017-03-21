@@ -3,6 +3,10 @@ package SimMeasures;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * Here Co-citation is different from common neighbors, it's Jaccard coefficient,
+ * J(i, j) = intersection(I_i, I_j) / union(I_i, I_j)
+ */
 public class CoCitation extends SimBase{
     int node_num;
     ArrayList<Integer> graph[];

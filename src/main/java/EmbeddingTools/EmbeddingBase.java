@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import java.util.Random;
 import JudgeTools.MyBase;
-abstract class EmbeddingBase extends MyBase{
+abstract public class EmbeddingBase extends MyBase{
     //ArrayList<Integer> [] graph; /* store the graph in an adjlist way */
     double source_vec[][]; /* store the source vectors */
     double dest_vec[][]; /* store the destination vectors */
