@@ -30,9 +30,9 @@ public class AALinkPred extends LinkPred{
 
 
         if(JudgeBase.TEST_MODE)
-            new CoCitationLinkPred(argv).run();
+            new AALinkPred(argv).run();
         else
-            new CoCitationLinkPred(args).run();
+            new AALinkPred(args).run();
     }
 
 }

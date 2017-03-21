@@ -32,8 +32,8 @@ public class AANodeRec extends NodeRec{
         };
 
         if(JudgeBase.TEST_MODE)
-            new CoCitationNodeRec(argv).run();
+            new AANodeRec(argv).run();
         else
-            new CoCitationNodeRec(args).run();
+            new AANodeRec(args).run();
     }
 }
