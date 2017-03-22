@@ -13,6 +13,7 @@ public class Distributions{
         String path_ppr_dis = "simi/ppr";
         String path_simrank_dis = "simi/simrank";
         String path_combine_dis = "simi/combine";
+        String path_preferAttach = "simi/preferAttach";
 
         String path_train_data = "data/arxiv_adj_train.edgelist";
         int node_num = 5242;
@@ -32,6 +33,7 @@ public class Distributions{
         write_dis_to_disk(new Katz(train_graph, node_num),qvs, path_katz_dis);
         write_dis_to_disk(new PersonalizedPageRank(train_graph, node_num), qvs, path_ppr_dis);
         write_dis_to_disk(new SimRank(train_graph, node_num), qvs, path_simrank_dis);
+        write_dis_to_disk(new PreferAttach(train_graph, node_num), qvs, path_preferAttach);
     }
     static void write_dis_to_disk(SimBase sm, int []qvs, String path) throws IOException{
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(path)));

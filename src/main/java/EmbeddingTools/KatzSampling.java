@@ -27,7 +27,8 @@ public class KatzSampling extends SamplingFrameWork{
                 "--neg_sample", "5",
                 "--iter", "10",
                 "--learning_rate", "0.02f",
-                "--debug"
+                "--threshold", "0.01",
+                "--debug",
         };
 
         if(EmbeddingBase.TEST_MODE)

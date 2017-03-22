@@ -50,8 +50,9 @@ def plt_line(infile, outfile):
         line_cnt += 1
 
     frame.set_yscale("log")
+    plt.title(outfile)
     plt.savefig(outfile)
-    plt.show()
+    # plt.show()
 
     return
 if __name__ == "__main__":
@@ -61,11 +62,13 @@ if __name__ == "__main__":
     path_ppr_dis = "ppr"
     path_simrank_dis = "simrank"
     # path_combine_dis = "combine"
+    path_preferAttach = "preferAttach"
 
     plt_line(path_aa_dis, "aa.png")
     plt_line(path_cocitation_dis, "cc.png")
     plt_line(path_katz_dis, "katz.png")
     plt_line(path_ppr_dis, "ppr.png")
     plt_line(path_simrank_dis, "simrank.png")
+    plt_line(path_preferAttach, "preferAttach.png")
 
 

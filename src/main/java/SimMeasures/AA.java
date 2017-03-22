@@ -4,31 +4,38 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * Adamic Adar.
+ * Score(x, y) = \sum_{common neighbors i} \frac{1}{log(deg(i))}
+ * Assign more weights to rare features.
+ */
+
+
 public class AA extends SimBase{
-    /**
-     * S_j = \beta \cdot A \cdot S_j + \beta \cdot A_j
-     */
-    ArrayList<Integer> reversedGraph[];
-    int D[];
+    double _logd[];
+    /* _logd[i] = 1 / log(deg(i))*/
     ArrayList<Integer> graph[];
     int node_num;
     public AA(ArrayList<Integer> graph[], int node_num){
         this.graph = graph;
-        this.reversedGraph = genReverseGraph(graph, node_num);
         this.node_num = node_num;
-        D = new int[node_num];
-        initDiag(D);
+        _logd = new double[node_num];
+        initDiag(_logd);
     }
 
-    void initDiag(int []d){
+    void initDiag(double []d){
         for(int i=0; i< node_num; i++){
-            d[i] += graph[i].size() + reversedGraph[i].size();
+            int size = graph[i].size();
+            if(size == 0)
+                d[i] = 0;
+            else
+                d[i] = 1.0 / Math.log(size);
         }
     }
     @Override
     public double calculateSim(int from, int to){
         int a[] = arrayList2Array(graph[from]);
-        int b[] = arrayList2Array(reversedGraph[to]);
+        int b[] = arrayList2Array(graph[to]);
         double sum = 0;
         /**
          * compute the intersection of a[] and b[], normalized by d[x]
@@ -40,7 +47,7 @@ public class AA extends SimBase{
             else if(a[ida] > b[idb])
                 idb ++;
             else{
-                sum += 1.0 / D[a[ida]];
+                sum += _logd[a[ida]];
                 ida ++;
                 idb ++;
             }

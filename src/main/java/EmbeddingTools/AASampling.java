@@ -24,6 +24,7 @@ public class AASampling extends SamplingFrameWork{
                 "--neg_sample", "5",
                 "--learning_rate", "0.02f",
                 "--iter", "10",
+                "--threshold", "0.0005",
                 "--debug"
         };
 

@@ -22,8 +22,9 @@ public class CoCitation extends SimBase{
          */
         ArrayList<Integer> tmp_adj_from = (ArrayList<Integer>)graph[from].clone();
         tmp_adj_from.retainAll(graph[to]);
-        return 1.0 * tmp_adj_from.size() /
-                (graph[from].size() + graph[to].size());
+        int inter_size = tmp_adj_from.size();
+        return 1.0 * inter_size /
+                (graph[from].size() + graph[to].size() - inter_size);
     }
 
 

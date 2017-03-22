@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
+ * THIS is ROOTED PageRank, not a Personalized PageRank. Maybe a *special case*.
  * This is a class to compute personalize PageRank, the restart_rate and
  * max_step is specified in this file, also, users can set them via the
  * constructor.
+ * If walk starts from node *root*, then p[i], i\neq root, p[i] is computed as:
+ * p[i] = (1 - restart_rate) * { p[j] / out_degree[j] }
  */
 public class PersonalizedPageRank extends SimBase{
     public PersonalizedPageRank(ArrayList<Integer> graph[], int node_num){

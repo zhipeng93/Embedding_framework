@@ -10,6 +10,7 @@ public class PPRSampling extends SamplingFrameWork{
     public PPRSampling(String []argv) throws IOException{
         super(argv);
         ppr = new PersonalizedPageRank(train_graph, node_num);
+
     }
 
     double[] singleSourceSim(int qv){
@@ -26,7 +27,7 @@ public class PPRSampling extends SamplingFrameWork{
                 "--neg_sample", "5",
                 "--iter", "10",
                 "--learning_rate", "0.02f",
-                "--threshold", "0.0005",
+                "--threshold", "0.01",
                 "--thread_num", "1",
                 "--debug"
         };

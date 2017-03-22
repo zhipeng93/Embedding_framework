@@ -8,9 +8,9 @@ public class Katz extends SimBase{
     /**
      * S_j = \beta \cdot A \cdot S_j + \beta \cdot A_j
      */
-    double beta = 0.5;
+    double beta = 0.1;
     ArrayList<Integer> graph[];
-    int ITER_NUM = 5;
+    int ITER_NUM = 3;
     int node_num;
     public Katz(ArrayList<Integer> graph[], int node_num){
         this.graph = genReverseGraph(graph, node_num);
