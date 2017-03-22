@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,11 +14,12 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     @Parameter(names = "--thread_num", description = "number of threads")
     protected int THREAD_NUM;
     @Parameter(names = "--threshold", description = "threshold for sampling framework")
-    protected static double positive_threshold;
+    protected static double threshold;
+
+    double positive_threshold;
 
     public SamplingFrameWork(String[] argv) throws IOException {
         super(argv);
-        System.out.printf("threshold is %f\n", positive_threshold);
     }
 
     public SamplingFrameWork() {
@@ -67,6 +69,30 @@ abstract class SamplingFrameWork extends EmbeddingBase {
         return idx;
     }
 
+    double getThresholdBysketch(double ratio){
+        /**
+         * get the a threshold that satisfies:
+         * 1. scores larger than the threshold are preserved;
+         * 2. The number of the preserved node-pairs / |NODE| = ratio.
+         */
+        int sample_node_num = 100;
+        int sample_score_each_node = 100;
+        double scores[] = new double[100 * 100];
+        int idx = 0;
+        for(int i = 0; i < sample_node_num; i++){
+            int qv = random.nextInt(node_num);
+            double rs[] = singleSourceSim(qv);
+            for(int j = 0; j< sample_score_each_node; j ++) {
+                int tmp = random.nextInt(node_num);
+                scores[idx++] = rs[tmp];
+            }
+        }
+        Arrays.sort(scores);
+        double threshold = scores[(int)((scores.length - 1) * (1 - ratio))];
+        /* "-1" to prevent indexOutOfBounds */
+        return threshold;
+    }
+
     double[] arrayList2DoubleArray(ArrayList<Double> list){
         double []rs = new double[list.size()];
         Iterator iter = list.iterator();
@@ -100,6 +126,12 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
     @Override
     void generateEmbeddings() {
+        /**
+         * get positive threshold first
+         */
+        positive_threshold = getThresholdBysketch(threshold);
+        System.out.printf("threshold is %f\n", positive_threshold);
+
         long start, end;
         start = System.nanoTime();
         int p_edge_num = genPositiveTable();
