@@ -35,39 +35,90 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     int []alias;
     double []prob;
     ArrayList<Integer> positive_edges[];
-    ArrayList<PositiveEdge> tmp_positive_edges;
+    ArrayList<PositiveEdge> tmp_positive_edges[];
 
     int genPositiveTable(){
+        /**
+         * TO DO parallel computing.
+         * This method is different from the original PPR!!.
+         */
+        tmp_positive_edges = new ArrayList [THREAD_NUM];
+        for(int i=0; i< THREAD_NUM; i++)
+            tmp_positive_edges[i] = new ArrayList<PositiveEdge>();
+
         positive_edges = new ArrayList[node_num];
         for(int i=0; i<node_num; i++)
             positive_edges[i] = new ArrayList<Integer>();
 
-        ArrayList<Integer> from_list = new ArrayList<Integer>();
-        ArrayList<Integer> to_list = new ArrayList<Integer>();
-        ArrayList<Double> weight_list = new ArrayList<Double>();
-        int idx = 0;
-        for(int i=0; i< node_num; i++){
-            int i_deg = train_graph[i].size();
-            double rs[] = singleSourceSim(i);
-            for(int j=0; j< node_num; j++){
-                if(i==j || rs[j] < positive_threshold) {
-                    continue;
-                }
-                else{
-                    from_list.add(i);
-                    to_list.add(j);
-                    weight_list.add(rs[j] * Math.pow(i_deg, 1));
-                    idx ++;
-                    positive_edges[i].add(j);
-                }
+        ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUM);
+        for(int threadId = 0; threadId < THREAD_NUM; threadId ++){
+            threadPool.execute(new GenPositiveEdge(threadId));
+        }
+        threadPool.shutdown();
+        while (!threadPool.isTerminated()) {
+            try {
+                threadPool.awaitTermination(1, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                System.out.println("Waiting.");
+                e.printStackTrace();
             }
         }
-        from = arrayList2IntArray(from_list);
-        to = arrayList2IntArray(to_list);
-        weight = arrayList2DoubleArray(weight_list);
+        int p_edge_num = 0;
+        for(int threadId = 0; threadId < THREAD_NUM; threadId ++)
+            p_edge_num += tmp_positive_edges[threadId].size();
 
+        from = new int[p_edge_num];
+        to = new int[p_edge_num];
+        weight = new double[p_edge_num];
+        int idx = 0;
+        for(int threadId = 0; threadId < THREAD_NUM; threadId ++) {
+            Iterator iter = tmp_positive_edges[threadId].iterator();
+            while (iter.hasNext()) {
+                PositiveEdge pe = (PositiveEdge) iter.next();
+                from[idx] = pe.from;
+                to[idx] = pe.to;
+                weight[idx] = pe.score * train_graph[pe.from].size();//* Math.pow(i_deg, 1);
+                positive_edges[pe.from].add(pe.to);
+                idx++;
+            }
+        }
+        assert idx == p_edge_num;
         return idx;
     }
+
+
+//    int genPositiveTable(){
+//        positive_edges = new ArrayList[node_num];
+//        for(int i=0; i<node_num; i++)
+//            positive_edges[i] = new ArrayList<Integer>();
+//
+//        ArrayList<Integer> from_list = new ArrayList<Integer>();
+//        ArrayList<Integer> to_list = new ArrayList<Integer>();
+//        ArrayList<Double> weight_list = new ArrayList<Double>();
+//        int idx = 0;
+//        for(int i=0; i< node_num; i++){
+//            int i_deg = train_graph[i].size();
+//            double rs[] = singleSourceSim(i);
+//            for(int j=0; j< node_num; j++){
+//                if(i==j || rs[j] < positive_threshold) {
+//                    continue;
+//                }
+//                else{
+//                    from_list.add(i);
+//                    to_list.add(j);
+//                    weight_list.add(rs[j] * Math.pow(i_deg, 1));
+////                    weight_list.add(rs[j]);
+//                    idx ++;
+//                    positive_edges[i].add(j);
+//                }
+//            }
+//        }
+//        from = arrayList2IntArray(from_list);
+//        to = arrayList2IntArray(to_list);
+//        weight = arrayList2DoubleArray(weight_list);
+//
+//        return idx;
+//    }
 
     double getThresholdBysketch(double ratio){
         /**
@@ -88,8 +139,8 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             }
         }
         Arrays.sort(scores);
-        double threshold = scores[(int)((scores.length - 1) * (1 - ratio))];
-        /* "-1" to prevent indexOutOfBounds */
+        double threshold = scores[(int)((scores.length - 1) * (1 - ratio))] + 1e-20;
+        /* "-1" to prevent indexOutOfBounds, 1e-20 to prevent case: 0 > 0 */
         return threshold;
     }
 
@@ -134,7 +185,9 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
         long start, end;
         start = System.nanoTime();
+//        int p_edge_num = genPositiveTable();
         int p_edge_num = genPositiveTable();
+
         genAliasTable(p_edge_num);
         end = System.nanoTime();
 
@@ -149,7 +202,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
          */
         ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUM);
         for(int threadId = 0; threadId < THREAD_NUM; threadId ++){
-            threadPool.execute(new UpdateViaSampling(threadId, SAMPLE_EDGE_NUM, p_edge_num));
+            threadPool.execute(new UpdateViaSampling(rio, threadId, SAMPLE_EDGE_NUM, p_edge_num));
         }
         threadPool.shutdown();
         while (!threadPool.isTerminated()) {
@@ -276,13 +329,19 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     public class UpdateViaSampling implements Runnable{
         int threadID, sampleNum, total_edge_num;
         double _sum_gd=0, _last_gd=Double.MAX_VALUE;
-        public UpdateViaSampling(int threadID, int sampleNum, int total_edge_num){
+        double rio;
+        public UpdateViaSampling(double rio, int threadID, int sampleNum, int total_edge_num){
             this.threadID = threadID;
             this.sampleNum = sampleNum;
             this.total_edge_num = total_edge_num;
+            this.rio = rio;
+        }
+        void updateRio(){
+            rio *= 0.9;
         }
         public void run(){
             for(int iter = 0; iter < ITER_NUM; iter ++) {
+                updateRio();
                 for (int i = 0; i < sampleNum; i++) {
                     updateOnce();
                 }
@@ -329,7 +388,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                     if (i == j || rs[j] < positive_threshold) {
                         continue;
                     } else {
-                        tmp_positive_edges.add(new PositiveEdge(i, j, rs[j]));
+                        tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
                     }
                 }
             }

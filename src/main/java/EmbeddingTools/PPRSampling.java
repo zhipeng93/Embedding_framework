@@ -27,8 +27,8 @@ public class PPRSampling extends SamplingFrameWork{
                 "--neg_sample", "5",
                 "--iter", "10",
                 "--learning_rate", "0.02f",
-                "--threshold", "0.01",
-                "--thread_num", "1",
+                "--threshold", "0.05",
+                "--thread_num", "2",
                 "--debug"
         };
 
