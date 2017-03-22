@@ -8,12 +8,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 abstract class NodeRec extends JudgeBase {
     @Parameter(names = "--topk", description = "number of recommendations for each node")
     int topk;
 
     HashSet<Integer> train_graph[], test_graph[];
+
+    int qvs[]; // records the query nodes, i.e., qvs[i] is the i-th query node
+    int rec[][]; // rec[i][*] is the node recommended for qvs[i]
+
     public NodeRec() throws IOException{
     }
     public NodeRec(String []argv) throws IOException{
@@ -30,138 +37,55 @@ abstract class NodeRec extends JudgeBase {
     abstract double[] singleSourceScore(int qv); // returns similarity scores to qv in a double[]
 
     void analysis() throws NumberFormatException, IOException {
-        BufferedReader test_reader = new BufferedReader(new FileReader(
-                new File(path_test_data)));
-        String line;
-        HashMap<Integer, Set<Integer>> predicate_set = generateTopk();
-        // store the recommended nodes for each node.
-        if (debug) {
-            /**
-             * for each node in the test graph, compute the number of hit.
-             */
-            int _node, _pred_num, _truth_num, _hit;
-            Set _pred, _truth;
-            for (Entry<Integer, Set<Integer>> entt : predicate_set.entrySet()) {
-                _node = entt.getKey();
-                _pred = (Set) ((HashSet) entt.getValue()).clone();
-                // deep copy. Since set.retainAll() will change the set.
-                _pred_num = _pred.size();
-                _truth = test_graph[_node];
-                if (_truth == null) {
-                    System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n", _pred_num, 0,
-                            0, 0.0);
-                    continue;
-                }
-                _truth_num = _truth.size();
-                _pred.retainAll(_truth);
-                _hit = _pred.size();
-                System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n",
-                        _pred_num, _truth_num, _hit, 1.0 * _hit / _pred_num);
+        HashSet<Integer> querys = getQueryNodes(path_test_data);
+        qvs = new int[querys.size()];
+        int idx = 0;
+        Iterator iter = querys.iterator();
+        while(iter.hasNext()){
+            qvs[idx ++] = (Integer) iter.next();
+        }
+        rec = new int[qvs.length][topk];
 
+        ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUM);
+        for(int threadId = 0; threadId < THREAD_NUM; threadId ++){
+            threadPool.execute(new SingleSourceQuery(threadId));
+        }
+        threadPool.shutdown();
+        while (!threadPool.isTerminated()) {
+            try {
+                threadPool.awaitTermination(1, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                System.out.println("Waiting.");
+                e.printStackTrace();
             }
         }
         /**
-         * preds: the number of edges you predicate for all of the nodes
-         * truth: the number of edges you have for all the nodes
-         * hit: the number of edges you predicate do exist.
+         *  compute the Precision, recall, and F1 using rec[][], qvs[]
+         *  HashSet<Integer, Set<Integer> >
          */
-        int truth = 0, hit = 0, preds = 0;
-        for (Entry<Integer, Set<Integer>> entt : predicate_set.entrySet())
-            preds += entt.getValue().size();
+        int pred = 0, truth = 0, hit = 0; //global
+        int _pred = 0, _truth = 0, _hit = 0; //local
+        for(int i=0; i< qvs.length;i++){
+            _pred = topk;
+            Set<Integer> neigh_test_graph = test_graph[qvs[i]];
+            _truth = neigh_test_graph.size();
 
-        while ((line = test_reader.readLine()) != null) {
-            String[] words = line.split("\t");
-            int from = Integer.parseInt(words[0]);
-            int to = Integer.parseInt(words[1]);
-            truth += 1;
-            if (predicate_set.get(from) != null && predicate_set.get(from).contains(to))
-                hit++;
+            _hit = 0;
+            for(int pp = 0; pp < _pred; pp ++){
+                if(neigh_test_graph.contains(rec[i][pp]))
+                    _hit ++;
+            }
+            System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n",
+                    _pred, _truth, _hit, 1.0 * _hit / _pred);
+            pred += _pred;
+            truth += _truth;
+            hit += _hit;
         }
         double recall = 1.0 * hit / truth;
-        double precision = 1.0 * hit / preds;
+        double precision = 1.0 * hit / pred;
         double f1 = 2 * precision * recall / (precision + recall);
         System.out.printf("%s Precision=%f, recall=%f, F1=%f (truth:%d, pred:%d, hit:%d)\n",
-                this.getClass(), precision, recall, f1, truth, preds, hit);
-        test_reader.close();
-    }
-
-    public ArrayList<NodeScore> singleTopk(int node) throws IOException{
-        /**
-         * compute sim(i, j) and store in (j, sim(i, j)) in score[j].
-         * return topk similar nodes to the given node,
-         * futhermore, edge(node, x) in train_graph is removed here.
-         */
-        ArrayList<NodeScore> single_topk = new ArrayList<NodeScore>();
-        double single_source_score[] = singleSourceScore(node);
-
-        /**
-         * Here we store some of the singleSourceScore of different methods. Store in res/ file.
-         */
-//        if(node % 100 == 0){
-//            for(int i = 0; i < node_num; i++)
-//                bw.write(single_source_score[i] + " ");
-//            bw.write("\n");
-//        }
-
-        for (int j = 0; j < node_num; j++) {
-            // if edge(i, j) is included in train_file, j should not be in the predication list.
-            if (node == j)
-                continue;
-            if (train_graph[node].contains(j))
-                continue;
-
-            single_topk.add(new NodeScore(j, single_source_score[j]));
-        }
-        Collections.sort(single_topk);
-
-        return single_topk;
-    }
-
-    public HashMap<Integer, Set<Integer>> generateTopk() throws IOException {
-        /**
-         * stores the topk similar node for each node, the edges exist in train dataset is not added.
-         * the similarity is computed via source_vec * source(dest)_vec
-         */
-
-        HashMap<Integer, Set<Integer>> resultSet = new HashMap<Integer, Set<Integer>>();
-        HashSet<Integer> query_nodes = getQueryNodes(path_test_data);
-        for (int i : query_nodes) {
-            /**
-             * for each node, compute the topk-similar nodes
-             * and store the index in resultset,
-             * edges exist in train dataset should be avoided.
-             */
-            List<NodeScore> score = singleTopk(i);
-            /**
-             * for each node i, we make #degree(i) * ratio predications, since different nodes
-             * get different number of links in the future.
-             */
-            int cnt = 0;
-            for (NodeScore entt : score) {
-                if (cnt++ >= topk) {
-                    break;
-                }
-                if (resultSet.get(i) == null)
-                    resultSet.put(i, new HashSet<Integer>());
-                resultSet.get(i).add(entt.index);
-
-            }
-            /**
-             * In the following, the author use some trivial skills
-             * to truncate the resultset.
-             */
-//            int cnt = 0;
-//            for (Pair entt : score) {
-//                if (cnt++ >= 10) {
-//                    break;
-//                }
-//                double tmp_score = neg * Math.exp(entt.score) / node_num;
-//                if (tmp_score < threshold)
-//                    break;
-//                resultSet.get(i).add(entt.index);
-//            }
-        }
-        return resultSet;
+                this.getClass(), precision, recall, f1, truth, pred, hit);
     }
 
     void run() throws IOException{
@@ -171,6 +95,38 @@ abstract class NodeRec extends JudgeBase {
         end = System.nanoTime();
         System.out.printf("nodeRec needs time %f\n", (end - start) / 1e9);
 
+    }
+    public class SingleSourceQuery implements Runnable{
+        int threadId;
+        public SingleSourceQuery(int threadId){
+            this.threadId = threadId;
+        }
+        public void run(){
+            /**
+             *
+             */
+            int qv_num = qvs.length;
+            int len = qv_num / THREAD_NUM + 1;
+            int start = threadId * len;
+            int end = Math.min((threadId + 1) * len, qv_num);
+            for(int i=start; i<end; i++){
+                int qv_id = qvs[i];
+                double []rs = singleSourceScore(qv_id);
+                ArrayList<NodeScore> tmp_nodescore = new ArrayList<NodeScore>();
+                for(int xx =0; xx< node_num; xx++){
+                    if( (!train_graph[qv_id].contains(xx)) &&
+                            (xx != qv_id) )
+                    tmp_nodescore.add(new NodeScore(xx, rs[xx]));
+                }
+
+                Collections.sort(tmp_nodescore);
+                int idx = 0;
+                Iterator iter = tmp_nodescore.iterator();
+                while(idx < topk){
+                    rec[i][idx ++] = ((NodeScore)iter.next()).index;
+                }
+            }
+        }
     }
 }
 

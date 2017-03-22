@@ -24,6 +24,9 @@ abstract public class JudgeBase extends MyBase{
     @Parameter(names = "--node_num", description = "number of nodes.")
     protected int node_num;
 
+    @Parameter(names = "--thread_num", description = "number of threads.")
+    protected int THREAD_NUM;
+
     public double vec_multi_vec(double[] vi, double[] vj) {
         int len = vi.length;
         double score = 0;

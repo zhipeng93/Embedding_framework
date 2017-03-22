@@ -36,6 +36,7 @@ public class PPRNodeRec extends NodeRec {
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
+                "--thread_num", "4",
         };
 
 

@@ -22,9 +22,9 @@ public class Distributions{
 
         Random random = new Random(System.currentTimeMillis());
         int cnt = 0;
-        final int qv_num = 15;
+        final int qv_num = 50;
         int qvs[] = new int[qv_num];
-        while (cnt < 15) {
+        while (cnt < qv_num) {
             qvs[cnt++] = random.nextInt(node_num);
         }
 
