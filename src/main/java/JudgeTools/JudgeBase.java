@@ -7,7 +7,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
+/**
+ * In this package, train_graph is read as a HashSet[], because we need frequently ask:
+ * if(train_graph[i].contains(j))
+ */
 abstract public class JudgeBase extends MyBase{
     public JudgeBase(String []argv){
         super(argv);
@@ -72,15 +77,15 @@ abstract public class JudgeBase extends MyBase{
         return graph;
     }
 
-    public static ArrayList<Integer> [] hashsetArray2ArraylistArray
+    public static LinkedList<Integer> [] hashsetArray2LinkedList
             (HashSet<Integer> train_graph[]){
         /**
          * I do not want to rewrite Set into ArrayList...
          */
         int size = train_graph.length;
-        ArrayList<Integer> rs[] = new ArrayList[size];
+        LinkedList<Integer> rs[] = new LinkedList[size];
         for(int i = 0; i < size; i ++)
-            rs[i] = new ArrayList<Integer>(train_graph[i]);
+            rs[i] = new LinkedList<Integer>(train_graph[i]);
         return rs;
     }
 

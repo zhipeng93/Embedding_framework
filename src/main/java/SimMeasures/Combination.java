@@ -1,8 +1,6 @@
 package SimMeasures;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 
 
 public class Combination extends SimBase{
@@ -11,7 +9,7 @@ public class Combination extends SimBase{
     Katz katz;
     SimRank simrank;
     int node_num;
-    public Combination(ArrayList<Integer> []graph, int node_num){
+    public Combination(LinkedList<Integer> []graph, int node_num){
         ppr = new PersonalizedPageRank(graph, node_num);
         coCitation = new CoCitation(graph, node_num);
         katz = new Katz(graph, node_num);

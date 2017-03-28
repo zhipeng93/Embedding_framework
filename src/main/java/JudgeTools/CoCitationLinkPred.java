@@ -11,7 +11,7 @@ public class CoCitationLinkPred extends LinkPred{
     public CoCitationLinkPred(String argv[]) throws IOException{
         super(argv);
         coCitation = new CoCitation(
-                hashsetArray2ArraylistArray(train_graph), node_num);
+                hashsetArray2LinkedList(train_graph), node_num);
     }
 
     @Override

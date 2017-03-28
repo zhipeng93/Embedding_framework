@@ -3,6 +3,7 @@ package EmbeddingTools;
 import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * The result is not as good as PPR. Also it's worse than APP.
@@ -24,8 +25,10 @@ import java.io.IOException;
  */
 public class SgdMF extends MatrixFactorFramework{
     PersonalizedPageRank ppr;
+    LinkedList<Integer> train_graph[];
     public SgdMF(String []argv) throws IOException{
         super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
         ppr = new PersonalizedPageRank(train_graph, node_num);
     }
 

@@ -9,7 +9,7 @@ public class PPRNodeRec extends NodeRec {
     public PPRNodeRec(String []argv) throws IOException{
         super(argv);
         ppr = new PersonalizedPageRank(
-                hashsetArray2ArraylistArray(train_graph), node_num);
+                hashsetArray2LinkedList(train_graph), node_num);
     }
 
 

@@ -1,18 +1,18 @@
 package SimMeasures;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Score(i, j) = deg(i) * deg(j)
  */
 
 public class PreferAttach extends SimBase{
-    ArrayList<Integer> graph[];
+    LinkedList<Integer> graph[];
     int node_num;
     int deg[];
 
 
-    public PreferAttach(ArrayList<Integer> graph[], int node_num){
+    public PreferAttach(LinkedList<Integer> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
         deg = new int[node_num];

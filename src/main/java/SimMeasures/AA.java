@@ -1,8 +1,6 @@
 package SimMeasures;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Adamic Adar.
@@ -14,9 +12,9 @@ import java.util.Iterator;
 public class AA extends SimBase{
     double _logd[];
     /* _logd[i] = 1 / log(deg(i))*/
-    ArrayList<Integer> graph[];
+    LinkedList<Integer> graph[];
     int node_num;
-    public AA(ArrayList<Integer> graph[], int node_num){
+    public AA(LinkedList<Integer> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
         _logd = new double[node_num];
@@ -34,8 +32,8 @@ public class AA extends SimBase{
     }
     @Override
     public double calculateSim(int from, int to){
-        int a[] = arrayList2Array(graph[from]);
-        int b[] = arrayList2Array(graph[to]);
+        int a[] = linkedList2Array(graph[from]);
+        int b[] = linkedList2Array(graph[to]);
         double sum = 0;
         /**
          * compute the intersection of a[] and b[], normalized by d[x]
@@ -54,16 +52,7 @@ public class AA extends SimBase{
         }
         return sum;
     }
-    int [] arrayList2Array(ArrayList<Integer> list){
-        int []rs = new int[list.size()];
-        Iterator iter = list.iterator();
-        int idx = 0;
-        while(iter.hasNext()){
-            rs[idx ++] = (Integer)(iter.next());
-        }
-        Arrays.sort(rs);
-        return rs;
-    }
+
 
     @Override
     public double[] singleSourceSim(int qv){

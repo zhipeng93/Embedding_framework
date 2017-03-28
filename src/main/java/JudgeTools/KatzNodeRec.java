@@ -8,7 +8,7 @@ public class KatzNodeRec extends NodeRec{
     Katz katz;
     public KatzNodeRec(String []argv) throws IOException{
         super(argv);
-        katz = new Katz(hashsetArray2ArraylistArray(train_graph),
+        katz = new Katz(hashsetArray2LinkedList(train_graph),
                 node_num);
 
     }

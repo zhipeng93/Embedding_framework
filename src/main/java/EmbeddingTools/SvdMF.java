@@ -8,11 +8,14 @@ import org.ejml.simple.SimpleSVD;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.LinkedList;
 
 public class SvdMF extends MatrixFactorFramework{
     PersonalizedPageRank ppr;
+    LinkedList<Integer> train_graph[];
     public SvdMF(String []argv) throws IOException{
         super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
         ppr = new PersonalizedPageRank(train_graph, node_num);
         score = new double[node_num][node_num];
     }

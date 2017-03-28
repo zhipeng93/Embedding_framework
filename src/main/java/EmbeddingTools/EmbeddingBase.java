@@ -1,16 +1,26 @@
 package EmbeddingTools;
+/**
+ * Each derived class takes care of train_graph[], for example,
+ * (1) similairty-computing-sampling based methods use LinkedList[] because
+ * they only need sequential access
+ * (2) random-walk based sampling methods use ArrayList[], because they need
+ * random access when walking
+ * (3) matrix decomposition based methods use LinkedList[], because they also
+ * need sequential access in the similarity computation phase.
+ */
+
 import com.beust.jcommander.Parameter;
 
 import java.io.*;
 import java.util.ArrayList;
 
+import java.util.LinkedList;
 import java.util.Random;
 import JudgeTools.MyBase;
 abstract public class EmbeddingBase extends MyBase{
-    //ArrayList<Integer> [] graph; /* store the graph in an adjlist way */
     double source_vec[][]; /* store the source vectors */
     double dest_vec[][]; /* store the destination vectors */
-    ArrayList<Integer> train_graph[];
+
     static Random random = new Random(System.currentTimeMillis());
 
     /**
@@ -28,7 +38,7 @@ abstract public class EmbeddingBase extends MyBase{
             dest_vec = new double[node_num][layer_size];
             rand_init(dest_vec, random);
         }
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
+
     }
     public EmbeddingBase(String []argv, double learning_rate)
             throws IOException{
@@ -128,12 +138,26 @@ abstract public class EmbeddingBase extends MyBase{
         return true;
     }
 
-    public static ArrayList<Integer>[] readEdgeListFromDisk(String path, int node_num)
+    public static LinkedList<Integer>[] readEdgeListFromDisk(String path, int node_num)
             throws NumberFormatException, IOException {
-        /**
-         graph is a hashset, with key as vertexId, value as the adjList.
-         Duplicate edges should not exist in input files.
-         */
+        LinkedList<Integer> graph[] = new LinkedList[node_num];
+        for (int i = 0; i < node_num; i++)
+            graph[i] = new LinkedList<Integer>();
+        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] words = line.split("\\s+");
+            int from = Integer.parseInt(words[0]);
+            int to = Integer.parseInt(words[1]);
+            graph[from].add(to);
+        }
+        reader.close();
+        return graph;
+    }
+
+    public static ArrayList<Integer>[] readArrayListEdgeListFromDisk(String path, int node_num)
+            throws NumberFormatException, IOException {
         ArrayList<Integer> graph[] = new ArrayList[node_num];
         for (int i = 0; i < node_num; i++)
             graph[i] = new ArrayList<Integer>();

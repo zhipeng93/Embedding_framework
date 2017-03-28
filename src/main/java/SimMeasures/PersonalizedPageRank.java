@@ -3,6 +3,7 @@ package SimMeasures;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * THIS is ROOTED PageRank, not a Personalized PageRank. Maybe a *special case*.
@@ -13,21 +14,21 @@ import java.util.Iterator;
  * p[i] = (1 - restart_rate) * { p[j] / out_degree[j] }
  */
 public class PersonalizedPageRank extends SimBase{
-    public PersonalizedPageRank(ArrayList<Integer> graph[], int node_num){
+    public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
         this.reversedGraph = genReverseGraph(graph, node_num);
         init_out_degree_table();
     }
-    public PersonalizedPageRank(ArrayList<Integer> graph[], int node_num,
+    public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num,
                double restart_rate, int max_step){
         this(graph, node_num);
         this.restart_rate = restart_rate;
         this.max_step = max_step;
     }
-    ArrayList<Integer> reversedGraph[];
+    LinkedList<Integer> reversedGraph[];
     int out_degree[];
-    ArrayList<Integer> graph[];
+    LinkedList<Integer> graph[];
     int node_num;
     double restart_rate = 0.2;
     int max_step = 5;

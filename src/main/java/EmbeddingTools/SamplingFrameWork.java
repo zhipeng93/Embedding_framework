@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +18,16 @@ abstract class SamplingFrameWork extends EmbeddingBase {
     protected static double threshold;
 
     double positive_threshold;
+    /**
+     * In the sampling framework, we only need a sequential access of the adjlist.
+     * So LinkedList is used.
+     */
+    LinkedList<Integer> train_graph[];
+
 
     public SamplingFrameWork(String[] argv) throws IOException {
         super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
     }
 
     public SamplingFrameWork() {

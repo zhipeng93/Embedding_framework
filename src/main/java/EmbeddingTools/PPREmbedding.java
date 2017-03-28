@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -31,8 +32,15 @@ public class PPREmbedding extends EmbeddingBase {
     @Parameter(names = "--sample", description = "number of samples for each node")
     public static int SAMPLE = 300;
 
+    /**
+     * use Arraylist for random access when random walk.
+     * In this class, only arraylist_train_graph[] are used.
+     */
+    ArrayList<Integer> train_graph[];
     public PPREmbedding(String []argv) throws IOException{
         super(argv);
+
+        train_graph = readArrayListEdgeListFromDisk(path_train_data, node_num);
     }
      /* used for adaptive learning rate of sgd*/
 
@@ -96,6 +104,10 @@ public class PPREmbedding extends EmbeddingBase {
                 // the random walk stops here. =diff=
                 break;
             } else {
+                /**
+                 * use linkedlist will destory the performance,
+                 * arraylist is needed,.
+                 */
                 id = tmp_adj.get(r.nextInt(tmp_adj.size()));
                 tmp_adj = train_graph[id];
             }

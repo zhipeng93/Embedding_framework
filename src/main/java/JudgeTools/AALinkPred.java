@@ -12,7 +12,7 @@ public class AALinkPred extends LinkPred{
     public AALinkPred(String argv[]) throws IOException{
         super(argv);
         aa = new AA(
-                hashsetArray2ArraylistArray(train_graph), node_num);
+                hashsetArray2LinkedList(train_graph), node_num);
     }
 
     @Override

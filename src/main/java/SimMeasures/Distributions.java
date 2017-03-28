@@ -2,6 +2,7 @@ package SimMeasures;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 import EmbeddingTools.EmbeddingBase;
@@ -18,7 +19,7 @@ public class Distributions{
         String path_train_data = "data/arxiv_adj_train.edgelist";
         int node_num = 5242;
 
-        ArrayList<Integer> train_graph[] = EmbeddingBase.readEdgeListFromDisk(path_train_data, node_num);
+        LinkedList<Integer> train_graph[] = EmbeddingBase.readEdgeListFromDisk(path_train_data, node_num);
 
         Random random = new Random(System.currentTimeMillis());
         int cnt = 0;
