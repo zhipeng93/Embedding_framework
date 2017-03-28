@@ -46,7 +46,7 @@ abstract public class JudgeBase extends MyBase{
         String line;
         String words[];
         while((line = bw.readLine()) != null){
-            words = line.split("\t");
+            words = line.split("\\s+");
             result.add(Integer.parseInt(words[0]));
         }
         return result;
