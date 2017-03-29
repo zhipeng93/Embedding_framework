@@ -152,24 +152,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
         return threshold;
     }
 
-    double[] arrayList2DoubleArray(ArrayList<Double> list){
-        double []rs = new double[list.size()];
-        Iterator iter = list.iterator();
-        int idx = 0;
-        while(iter.hasNext())
-            rs[idx ++] = (Double)iter.next();
-        return rs;
-    }
-
-    int[] arrayList2IntArray(ArrayList<Integer> list){
-        int []rs = new int[list.size()];
-        Iterator iter = list.iterator();
-        int idx = 0;
-        while(iter.hasNext())
-            rs[idx ++] = (Integer) iter.next();
-        return rs;
-    }
-
 
     abstract double[] singleSourceSim(int a);
 
@@ -193,7 +175,6 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
         long start, end;
         start = System.nanoTime();
-//        int p_edge_num = genPositiveTable();
         int p_edge_num = genPositiveTable();
 
         genAliasTable(p_edge_num);
@@ -217,35 +198,9 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             try {
                 threadPool.awaitTermination(1, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                System.out.println("Waiting.");
                 e.printStackTrace();
             }
         }
-//        for (int iter = 0; iter < ITER_NUM; iter++) {
-//            for (int id = 0; id < SAMPLE_EDGE_NUM; id++) {
-//                // use sim_{shuffle_ids[id]}[x] to update the gradient.
-//                int edge_id = sampleAnPositiveEdge(p_edge_num);
-//
-//                double []e = new double[layer_size];
-//                UpdateVector(source_vec[from[edge_id]], dest_vec[to[edge_id]], 1, e);
-//                for(int neg_id=0; neg_id < neg; neg_id ++){
-//                    int neg_edge_id = sampleAnNegativeEdge(from[edge_id]);
-//                    UpdateVector(source_vec[from[edge_id]], dest_vec[neg_edge_id], 0, e);
-//                }
-//                for(int lay_id = 0; lay_id < layer_size; lay_id ++)
-//                    source_vec[from[edge_id]][lay_id] += e[lay_id];
-//
-//            }
-//            if(debug)
-//                System.out.printf("sum gd is %f\n", sum_gd);
-//
-//            if(Math.abs(sum_gd - last_sum_gd) < delta_gd)
-//                break;
-//            else{
-//
-//
-//            }
-//        }
         end = System.nanoTime();
         if(debug)
             System.out.printf("gd time is %f\n", (end - start) / 1e9);

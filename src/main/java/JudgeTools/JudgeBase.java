@@ -16,7 +16,7 @@ import java.util.LinkedList;
 abstract public class JudgeBase extends MyBase{
     public JudgeBase(String []argv){
         super(argv);
-        System.out.print(node_num);
+        System.out.print(node_num + "\n");
     }
     public JudgeBase(){}
 

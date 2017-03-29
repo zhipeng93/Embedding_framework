@@ -42,11 +42,13 @@ public class SgdMF extends MatrixFactorFramework{
     void sppmi(double[] a){
         double pmi=0;
         for(int i=0; i<a.length; i++){
-            if(a[i] < 1e-9)
-                pmi = 0;
+            if(a[i] < 1e-20)
+                pmi = -10;
             else
-                pmi = Math.max(Math.log(a[i] * node_num / neg), 0);
-            a[i] = pmi;
+                pmi = Math.log(a[i] * node_num / neg);
+//                pmi = Math.max(Math.log(a[i]), 0);
+
+                a[i] = pmi;
         }
     }
     public static void main(String []args) throws IOException{
@@ -57,7 +59,7 @@ public class SgdMF extends MatrixFactorFramework{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
-                "--learning_rate", "0.015f",
+                "--learning_rate", "0.0005f",
                 "--debug"
         };
 

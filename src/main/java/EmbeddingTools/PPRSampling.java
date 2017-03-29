@@ -14,7 +14,10 @@ public class PPRSampling extends SamplingFrameWork{
     }
 
     double[] singleSourceSim(int qv){
-        return ppr.singleSourceSim(qv);
+        double rs [] = ppr.singleSourceSim(qv);
+//        for(int i=0; i< node_num; i++)
+//            rs[i] *= train_graph[i].size();
+        return rs;
     }
 
 

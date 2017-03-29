@@ -46,7 +46,7 @@ public class Distributions{
     }
     static void writeArrayToDisk(BufferedWriter bw, double []score) throws IOException{
         for(int i=0; i < score.length; i++){
-            bw.write(score[i] + " ");
+            bw.write(Double.toString(score[i]) + " ");
         }
         bw.write("\n");
     }

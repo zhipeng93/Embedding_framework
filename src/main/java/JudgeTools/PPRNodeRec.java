@@ -26,7 +26,7 @@ public class PPRNodeRec extends NodeRec {
 //        for(int i=0; i<rs.length; i++)
 //            rs[i] *= Math.pow(out_deg, 1.05);
 //        return rs;
-//        // why this did not improve the effect?
+//        // this did not improve the effect.
         return ppr.singleSourceSim(qv);
     }
 
@@ -36,9 +36,8 @@ public class PPRNodeRec extends NodeRec {
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
-                "--thread_num", "4",
+                "--thread_num", "1",
         };
-
 
         if(JudgeBase.TEST_MODE)
             new PPRNodeRec(argv).run();

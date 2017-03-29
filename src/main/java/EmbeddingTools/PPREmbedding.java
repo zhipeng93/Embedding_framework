@@ -39,7 +39,6 @@ public class PPREmbedding extends EmbeddingBase {
     ArrayList<Integer> train_graph[];
     public PPREmbedding(String []argv) throws IOException{
         super(argv);
-
         train_graph = readArrayListEdgeListFromDisk(path_train_data, node_num);
     }
      /* used for adaptive learning rate of sgd*/

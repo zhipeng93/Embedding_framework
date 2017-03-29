@@ -60,6 +60,7 @@ public class EmbeddingsNodeRec extends NodeRec{
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
+                "--thread_num", "2",
         };
 
         if(JudgeBase.TEST_MODE)

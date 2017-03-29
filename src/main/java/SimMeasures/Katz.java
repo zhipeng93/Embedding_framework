@@ -6,7 +6,10 @@ import java.util.LinkedList;
 
 public class Katz extends SimBase{
     /**
-     * S_j = \beta \cdot A \cdot S_j + \beta \cdot A_j
+     * S_j = \beta \cdot A \cdot S_j + \beta \cdot A_j (1)
+     * S = \beta \cdot A \cdot S + \beta \cdot A. (2)
+     * S = (1 - \beta cdot A)^{-1} * \beta \cdot A, which can be expanded as equation (2).
+     * This is a paper.
      */
     double beta = 0.1;
     LinkedList<Integer> graph[];

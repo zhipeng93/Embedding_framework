@@ -11,7 +11,7 @@ import java.util.LinkedList;
  * max_step is specified in this file, also, users can set them via the
  * constructor.
  * If walk starts from node *root*, then p[i], i\neq root, p[i] is computed as:
- * p[i] = (1 - restart_rate) * { p[j] / out_degree[j] }
+ * p[i] = (1 - restart_rate) *\sum_{j \in inNeigh(i)} { p[j] / out_degree[j] }
  */
 public class PersonalizedPageRank extends SimBase{
     public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num){
@@ -19,6 +19,8 @@ public class PersonalizedPageRank extends SimBase{
         this.node_num = node_num;
         this.reversedGraph = genReverseGraph(graph, node_num);
         init_out_degree_table();
+        /* changing the formula of Rooted PageRank.*/
+        init_in_degree_table();
     }
     public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num,
                double restart_rate, int max_step){
@@ -28,15 +30,14 @@ public class PersonalizedPageRank extends SimBase{
     }
     LinkedList<Integer> reversedGraph[];
     int out_degree[];
+    int in_degree[];
     LinkedList<Integer> graph[];
     int node_num;
     double restart_rate = 0.2;
     int max_step = 5;
-
     @Override
     public double[] singleSourceSim(int qv){
         double p[][] = new double[2][node_num];
-
         p[0][qv] = 1;
         for (int step = 0; step < max_step; step++) {
             //use p[step & 1] to update p[1 - (step & 1)]
@@ -49,6 +50,7 @@ public class PersonalizedPageRank extends SimBase{
                     p[1 - (step & 1)][i] += (1- restart_rate) * p[step & 1][j] * 1.0 / out_degree[j];
                 }
             }
+//            p[1 - (step & 1)][qv] += restart_rate;
             p[1 - (step & 1)][qv] += restart_rate;
         }
         return p[max_step & 1];
@@ -65,6 +67,11 @@ public class PersonalizedPageRank extends SimBase{
         out_degree = new int[node_num];
         for(int i = 0; i < node_num; i++)
             out_degree[i] = graph[i].size();
+    }
+    void init_in_degree_table(){
+        in_degree = new int[node_num];
+        for(int i=0; i< node_num; i++)
+            in_degree[i] = reversedGraph[i].size();
     }
 
 }
