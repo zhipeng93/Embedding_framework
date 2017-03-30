@@ -21,6 +21,11 @@ public class Katz extends SimBase{
         this.reverseGraph = genReverseGraph(graph, node_num);
         this.node_num = node_num;
     }
+    public Katz(LinkedList<Integer> graph[], int node_num, double beta, int iter_num){
+        this(graph, node_num);
+        this.beta = beta;
+        this.ITER_NUM = iter_num;
+    }
     @Override
     public double calculateSim(int from, int to){return 0;}
 
@@ -48,7 +53,6 @@ public class Katz extends SimBase{
             while(iterator.hasNext()){
                 rs[kk & 1][(Integer)iterator.next()] += 1 * beta;
             }
-//                rs[kk & 1][qv] += 1;
 
         }
 //        for(int i=0;i< node_num; i++)
