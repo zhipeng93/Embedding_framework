@@ -11,7 +11,7 @@ import java.util.LinkedList;
  * max_step is specified in this file, also, users can set them via the
  * constructor.
  * If walk starts from node *root*, then p[i], i\neq root, p[i] is computed as:
- * p[i] = (1 - restart_rate) *\sum_{j \in inNeigh(i)} { p[j] / out_degree[j] }
+ * p[i] = (1 - restart_rate) *\sum_{j \in :q(i)} { p[j] / out_degree[j] }
  */
 public class PersonalizedPageRank extends SimBase{
     public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num){
