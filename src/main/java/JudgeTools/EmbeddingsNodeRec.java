@@ -44,8 +44,9 @@ public class EmbeddingsNodeRec extends NodeRec{
     @Override
     double[] singleSourceScore(int qv){
         double score[] = new double[node_num];
-        for(int i = 0; i < node_num; i++)
+        for(int i = 0; i < node_num; i++) {
             score[i] = calculateScore(qv, i);
+        }
         return score;
     }
 
