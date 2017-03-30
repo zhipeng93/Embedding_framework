@@ -1,0 +1,87 @@
+#! /bin/bash
+
+# Judge Tools
+embedding_link_pred(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.EmbeddingsLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --path_source_vec $path_source_vec --node_num $node_num --path_dest_vec $path_dest_vec --negative_ratio $neg_ratio $1
+}
+
+embedding_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.EmbeddingsNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --topk $topk --node_num $node_num $1
+}
+embedding_multilabel_classification(){
+    python MultiLabelClassification_group.py $path_source_vec $group_info 
+}
+
+cocitation_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CoCitationNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+cocitation_link_pred(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CoCitationLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --negative_ratio $neg_ratio --node_num $node_num $1
+}
+
+aa_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.AANodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+aa_link_pred(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.AALinkPred --path_train_data $path_train_data --path_test_data $path_test_data --negative_ratio $neg_ratio --node_num $node_num $1
+}
+
+katz_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.KatzNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+rkatz_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.ReverseKatzNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+ppr_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.PPRNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+rppr_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.ReversePPRNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+simrank_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.SimRankNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+# Embedding Tools
+ppr_embedding(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPREmbedding --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --sample 200 --max_step 10 --iter $iter_num --jump_factor 0.2f --learning_rate 0.01 $1
+}
+ppr_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPRSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate 0.02 --threshold $threshold  --thread_num $thread_num $1
+}
+cocitation_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.CoCitationSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate 0.02  --threshold $threshold --thread_num $thread_num $1
+}
+katz_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.KatzSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate 0.02 --threshold $threshold --thread_num $thread_num $1
+}
+simrank_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.SimRankSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate 0.02 --threshold $threshold --thread_num $thread_num $1
+}
+
+aa_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.AASampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate 0.02 --threshold $threshold --thread_num $thread_num $1
+}
+
+sgd_mf(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.SgdMF --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold $1
+}
+# cd $EMBEDDING_HOME/deepwalk
+deepwalk(){
+    cd $EMBEDDING_HOME/deepwalk
+    python __main__.py --input $input_data --format edgelist --output $out_dir/dp.vec --window-size 6 --number-walks 80 --representation-size 64 --workers 1 --walk-length 10 --max-memory-data-size 100000000000
+}
+
+# cd $EMBEDDING_HOME/LINE/linux
+line_order1(){
+    ./line -train $input_data -output $out_dir/line.vec1 --size 64 -order 1 -threads 16 -sample 40
+}
+line_order2(){
+    ./line -train $input_data -output $out_dir/line.vec2 --size 64 -order 2 -threads 16 -samples 40 
+}
+
