@@ -8,7 +8,7 @@ path_train_data=$input_dir/flickr_0_99.edgelist
 neg_ratio=10 # used for link Predication
 topk=40 # used for node_recommendation
 threshold=0.01 # used for sampling. 1% of the node pairs are used.
-iter_num=1 # train iterations for sampling processes.
+iter_num=10 # train iterations for sampling processes.
 thread_num=16 # num of threads for sampling based methods and calculating similarity scores.
 learning_rate=0.02 # learning rate for sgdmf.
 
