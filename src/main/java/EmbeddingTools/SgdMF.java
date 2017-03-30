@@ -35,7 +35,7 @@ public class SgdMF extends MatrixFactorFramework{
     @Override
     double []singleSourceScore(int qv){
         double tmp[] = ppr.singleSourceSim(qv);
-        sppmi(tmp);
+//        sppmi(tmp);
         return tmp;
     }
 
@@ -43,6 +43,7 @@ public class SgdMF extends MatrixFactorFramework{
         double pmi=0;
         for(int i=0; i<a.length; i++){
             if(a[i] < 1e-20)
+                //seldom shows up.
                 pmi = -10;
             else
                 pmi = Math.log(a[i] * node_num / neg);
@@ -60,7 +61,8 @@ public class SgdMF extends MatrixFactorFramework{
                 "--neg_sample", "5",
                 "--iter", "10",
                 "--learning_rate", "0.0005f",
-                "--debug"
+                "--threshold", "0.01",
+                "--debug",
         };
 
         if(EmbeddingBase.TEST_MODE)

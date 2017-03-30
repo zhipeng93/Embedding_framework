@@ -1,6 +1,9 @@
 package EmbeddingTools;
 
+import com.beust.jcommander.Parameter;
+
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * perform matrix factorization on each different tasks to verify the correctness of my finding.
@@ -9,6 +12,8 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
     public MatrixFactorFramework(String []argv) throws IOException{
         super(argv);
     }
+    @Parameter(names = "--threshold", description = "threshold for sampling framework")
+    protected static double threshold;
 
     static double sum_loss = 0;
 
@@ -28,18 +33,51 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
     static double eps = 1e-6;
 
 
+    double getThresholdBysketch(double ratio){
+        /**
+         * get the a threshold that satisfies:
+         * 1. scores larger than the threshold are preserved;
+         * 2. The number of the preserved node-pairs / |NODE| = ratio.
+         *
+         * This is also consistent with sgns, which only concerns the
+         * frequently word-context pairs. Selddom-occur ones are not
+         * computed.
+         */
+        int sample_node_num = 100;
+        int sample_score_each_node = 100;
+        double scores[] = new double[100 * 100];
+        int idx = 0;
+        for(int i = 0; i < sample_node_num; i++){
+            int qv = random.nextInt(node_num);
+            double rs[] = singleSourceScore(qv);
+            for(int j = 0; j< sample_score_each_node; j ++) {
+                int tmp = random.nextInt(node_num);
+                scores[idx++] = rs[tmp];
+            }
+        }
+        Arrays.sort(scores);
+        double threshold = scores[(int)((scores.length - 1) * (1 - ratio))] + 1e-20;
+        /* "-1" to prevent indexOutOfBounds, 1e-20 to prevent case: 0 > 0 */
+        return threshold;
+    }
 
     @Override
     void generateEmbeddings() throws IOException{
+        double cut_threshold = getThresholdBysketch(threshold);
+        System.out.printf("threshold is %f\n", cut_threshold);
         for(int iter = 0; iter < ITER_NUM; iter ++) {
             sum_loss = 0;
 //            rio -= 0.001;
             for (int i = 0; i < node_num; i++) {
                 double sim[] = singleSourceScore(i);//source[i] * dest[j] = sim[j]
                 for (int j = 0; j < node_num; j++) {
-//                    if(sim[j] == 0)
-//                        continue;// only used in recommendation.
-                    mfSgd(source_vec[i], dest_vec[j], sim[j]);
+                    if(sim[j] < cut_threshold)
+                        continue;// only used in recommendation.
+                        // here we follow word2vec: also ignore not-frequent ones.
+                    else {
+                        double norm_score = Math.log(sim[j] * node_num / neg);
+                        mfSgd(source_vec[i], dest_vec[j], norm_score);
+                    }
                 }
             }
             System.out.printf("%d iteration, sum loss is %f\n", iter, sum_loss);
