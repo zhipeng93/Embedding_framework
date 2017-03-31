@@ -14,7 +14,7 @@ public class Katz extends SimBase{
     double beta = 0.1;
     LinkedList<Integer> reverseGraph[];
     LinkedList<Integer> graph[];
-    int ITER_NUM = 3;
+    int ITER_NUM = 4;
     int node_num;
     public Katz(LinkedList<Integer> graph[], int node_num){
         this.graph = graph;

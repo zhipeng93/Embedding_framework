@@ -33,8 +33,8 @@ public class PersonalizedPageRank extends SimBase{
     int in_degree[];
     LinkedList<Integer> graph[];
     int node_num;
-    double restart_rate = 0.2;
-    int max_step = 5;
+    double restart_rate = 0.9;
+    int max_step = 3;
     @Override
     public double[] singleSourceSim(int qv){
         double p[][] = new double[2][node_num];
@@ -53,6 +53,8 @@ public class PersonalizedPageRank extends SimBase{
 //            p[1 - (step & 1)][qv] += restart_rate;
             p[1 - (step & 1)][qv] += restart_rate;
         }
+//        for(int i=0; i< node_num; i++)
+//            p[max_step & 1][i] *= out_degree[i];
         return p[max_step & 1];
     }
 
