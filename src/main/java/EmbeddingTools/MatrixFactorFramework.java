@@ -20,16 +20,16 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
     /**
      * parameters for adam(a good solution for sgd)
      */
-     double mt = 0, vt = 0;
-     double last_ms[] = new double[this.layer_size],
-             last_vs[] = new double[this.layer_size];
+    double mt = 0, vt = 0;
+    double last_ms[] = new double[this.layer_size],
+            last_vs[] = new double[this.layer_size];
 
     double last_mt[] = new double[this.layer_size],
             last_vt[] = new double[this.layer_size];
-     double mt_head = 0, vt_head = 0;
+    double mt_head = 0, vt_head = 0;
 
-     double beta1 = 0.9, beta2 = 0.999;
-     double beta1t = 0.9, beta2t = 0.999; //math.pow(0.9, t)
+    double beta1 = 0.9, beta2 = 0.999;
+    double beta1t = 0.9, beta2t = 0.999; //math.pow(0.9, t)
     static double eps = 1e-6;
 
 

@@ -1,44 +1,31 @@
 #! /bin/bash
+node_num=6301
+input_dir='input/PG'
+output_dir='output/PG'
+path_test_data=$input_dir/PG_test.edgelist
+path_train_data=$input_dir/PG_train.edgelist
+
+neg_ratio=10 # used for link Predication
+topk=10 # used for node_recommendation
+topk_sampling=10 # used for sampling, for each node, use topk_sampling candidates for each node.
+threshold=0.005 # used for sampling. 1% of the node pairs are used.
+iter_num=3 # train iterations for sampling processes.
+thread_num=4 # num of threads for sampling based methods and calculating similarity scores.
+learning_rate=0.02 # learning rate for sgdmf.
 . ./funcs.sh
-node_num=5242
-input_dir='input/arxiv'
-output_dir='output/arxiv'
-path_test_data=$input_dir/arxiv_test.edgelist
-path_train_data=$input_dir/arxiv_train.edgelist
 
+echo "*********************************************************"
+path_source_vec=$katz_source_vec
+path_dest_vec=$katz_dest_vec
 
-app_source_vec=$output_dir/APP_source.vec
-app_dest_vec=$output_dir/APP_dest.vec
-dp_vec=$output_dir/dp.vec
-line_1_vec=$output_dir/line.vec1
-line_2_vec=$output_dir/line.vec2
-katz_source_vec=$output_dir/katz_source.vec
-katz_dest_vec=$output_dir/katz_dest.vec
-simrank_source_vec=$output_dir/simrank_source.vec
-simrank_dest_vec=$output_dir/simrank__dest.vec
-co_citation_source_vec=$output_dir/co_citation_source.vec
-co_citation_dest_vec=$output_dir/co_citation_dest.vec
-aa_source_vec=$output_dir/aa_source.vec
-aa_dest_vec=$output_dir/aa_dest.vec
-
-ppr_sampling_source_vec=$output_dir/ppr_sampling_source.vec
-ppr_sampling_dest_vec=$output_dir/ppr_sampling_dest.vec
-neg_ratio=10
-topk=10
-#group_info=$input_dir/flickr.group
-
-learning_rate=0.02
-threshold=0.05
-iter_num=10
-thread_num=1
-path_source_vec=$app_source_vec
-path_dest_vec=$app_dest_vec
-katz_node_rec --debug
-#ppr_node_rec --debug
-#sgd_mf
-#ppr_sampling --debug
+#ppr_embedding --debug
 path_dest_vec="no_input_dest"
-#embedding_node_rec
-rppr_node_rec --debug
-ppr_node_rec --debug
-rkatz_node_rec --debug
+#embedding_node_rec --debug
+
+path_dest_vec=$katz_dest_vec
+ppr_sampling --debug
+path_dest_vec="no_input_dest"
+embedding_node_rec --debug
+
+#ppr_node_rec
+#rppr_node_rec

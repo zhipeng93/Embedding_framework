@@ -21,5 +21,4 @@ abstract public class MyBase{
             return;
         }
     }
-
 }

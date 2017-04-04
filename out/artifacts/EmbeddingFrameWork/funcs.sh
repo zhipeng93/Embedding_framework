@@ -72,20 +72,20 @@ ppr_embedding(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPREmbedding --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --sample 200 --max_step 10 --iter $iter_num --jump_factor 0.2f --learning_rate 0.01 $1
 }
 ppr_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPRSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold  --thread_num $thread_num $1
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPRSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold  --thread_num $thread_num --topk $topk_sampling $1
 }
 cocitation_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.CoCitationSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate  --threshold $threshold --thread_num $thread_num $1
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.CoCitationSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate  --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 katz_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.KatzSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num $1
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.KatzSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 simrank_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.SimRankSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num $1
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.SimRankSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 
 aa_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.AASampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num $1
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.AASampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 
 sgd_mf(){

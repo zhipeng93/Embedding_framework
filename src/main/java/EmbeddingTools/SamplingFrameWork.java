@@ -3,10 +3,7 @@ package EmbeddingTools;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -14,8 +11,15 @@ import java.util.concurrent.TimeUnit;
 abstract class SamplingFrameWork extends EmbeddingBase {
     @Parameter(names = "--thread_num", description = "number of threads")
     protected int THREAD_NUM;
+    /**
+     * threshold and topk are two strategies to generate the candidates
+     * fed to the sampling framework, what scores they really are also matters.
+     * Furthermore, only when topk=0, threshold is used.
+     */
     @Parameter(names = "--threshold", description = "threshold for sampling framework")
     protected static double threshold;
+    @Parameter(names = "--topk", description = "topk candidates given a node for sampling framework")
+    protected static int topk;
 
     double positive_threshold;
     /**
@@ -348,10 +352,28 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             for(int i=start; i<end; i++){
                 double []rs = singleSourceSim(i);
                 for(int j = 0; j< node_num; j++) {
-                    if (i == j || rs[j] < positive_threshold) {
-                        continue;
-                    } else {
-                        tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
+                    if(topk == 0) { //filter by threshold
+                        if (i == j || rs[j] < positive_threshold) {
+                            continue;
+                        } else {
+                            tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
+                        }
+                    }
+                    else{//filter by topk
+                        PositiveEdge[] edges = new PositiveEdge[node_num];
+                        for(int ei=0; ei < node_num; ei++){
+                            edges[ei] = new PositiveEdge(i, ei, rs[ei]);
+                        }
+                        Arrays.sort(edges);
+                        int cnt = 0;
+                        while(cnt < topk){
+                            if(edges[cnt].score > 1e-20) {
+                                tmp_positive_edges[threadId].add(edges[cnt ++]);
+                            }
+                            else
+                                break;
+                        }
+
                     }
                 }
             }
