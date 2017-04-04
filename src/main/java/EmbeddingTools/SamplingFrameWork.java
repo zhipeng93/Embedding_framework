@@ -361,17 +361,16 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                     }
                     else{//filter by topk
                         PositiveEdge[] edges = new PositiveEdge[node_num];
+                        int idx = 0;
                         for(int ei=0; ei < node_num; ei++){
-                            edges[ei] = new PositiveEdge(i, ei, rs[ei]);
-                        }
-                        Arrays.sort(edges);
-                        int cnt = 0;
-                        while(cnt < topk){
-                            if(edges[cnt].score > 1e-20) {
-                                tmp_positive_edges[threadId].add(edges[cnt ++]);
+                            if(rs[ei] > positive_threshold / 100) {
+                                edges[idx ++] = new PositiveEdge(i, ei, rs[ei]);
                             }
-                            else
-                                break;
+                        }
+                        Arrays.sort(edges, 0, idx);
+                        int cnt = 0;
+                        while(cnt < topk && cnt < idx){
+                                tmp_positive_edges[threadId].add(edges[cnt ++]);
                         }
 
                     }
