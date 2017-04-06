@@ -10,8 +10,10 @@ katz_source_vec=$output_dir/katz_source.vec
 katz_dest_vec=$output_dir/katz_dest.vec
 simrank_source_vec=$output_dir/simrank_source.vec
 simrank_dest_vec=$output_dir/simrank__dest.vec
-co_citation_source_vec=$output_dir/co_citation_source.vec
-co_citation_dest_vec=$output_dir/co_citation_dest.vec
+common_neighbors_source_vec=$output_dir/common_neighbors_source.vec
+common_neighbors_dest_vec=$output_dir/common_neighbors_dest.vec
+jaccard_source_vec=$output_dir/jaccard_source.vec
+jaccard_dest_vec=$output_dir/jaccard_dest.vec
 aa_source_vec=$output_dir/aa_source.vec
 aa_dest_vec=$output_dir/aa_dest.vec
 ppr_sampling_source_vec=$output_dir/ppr_sampling_source.vec
@@ -32,14 +34,21 @@ embedding_multilabel_classification(){
     python MultiLabelClassification_group.py $path_source_vec $group_info 
 }
 
-cocitation_node_rec(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CoCitationNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+common_neighbors_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CommonNeighborsNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
 }
 
-cocitation_link_pred(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CoCitationLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --negative_ratio $neg_ratio --node_num $node_num $1
+common_neighbors_link_pred(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.CommonNeighborsLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --negative_ratio $neg_ratio --node_num $node_num $1
 }
 
+jaccard_node_rec(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.JaccardNodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
+}
+
+jaccard_link_pred(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.JaccardLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --negative_ratio $neg_ratio --node_num $node_num $1
+}
 aa_node_rec(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.AANodeRec --thread_num $thread_num --path_train_data $path_train_data --path_test_data $path_test_data --topk $topk --node_num $node_num $1
 }
@@ -74,8 +83,11 @@ ppr_embedding(){
 ppr_sampling(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPRSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold  --thread_num $thread_num --topk $topk_sampling $1
 }
-cocitation_sampling(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.CoCitationSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate  --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
+common_neighbors_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.CommonNeighborsSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate  --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
+}
+jaccard_sampling(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.JaccardSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate  --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 katz_sampling(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.KatzSampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1

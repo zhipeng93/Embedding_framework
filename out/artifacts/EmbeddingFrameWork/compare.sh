@@ -15,19 +15,6 @@ katz_node_rec --debug
 rkatz_node_rec --debug
 
 echo "*********************************************************"
-path_source_vec=$simrank_source_vec
-path_dest_vec=$simrank_dest_vec
-echo "embedding"
-simrank_sampling --debug
-
-path_dest_vec="no_input_dest"
-echo "simrank embedding node_rec"
-embedding_node_rec --debug
-
-echo "simrank node_rec"
-simrank_node_rec --debug
-
-echo "*********************************************************"
 path_source_vec=$app_source_vec
 path_dest_vec=$app_dest_vec
 echo "ppr_embedding"
@@ -51,18 +38,44 @@ ppr_node_rec --debug
 rppr_node_rec --debug
 
 echo "*********************************************************"
-path_source_vec=$co_citation_source_vec
-path_dest_vec=$co_citation_dest_vec
+path_source_vec=$simrank_source_vec
+path_dest_vec=$simrank_dest_vec
 echo "embedding"
-cocitation_sampling --debug
+simrank_sampling --debug
 
 path_dest_vec="no_input_dest"
-echo "cocitation embedding node_rec"
+echo "simrank embedding node_rec"
+embedding_node_rec --debug
+
+echo "simrank node_rec"
+simrank_node_rec --debug
+
+
+echo "*********************************************************"
+path_source_vec=$common_neighbors_source_vec
+path_dest_vec=$common_neighbors_dest_vec
+echo "embedding"
+common_neighbors_sampling --debug
+
+path_dest_vec="no_input_dest"
+echo "common_neighbors embedding node_rec"
 embedding_node_rec --debug
 
 echo "cocitation node_rec"
-cocitation_node_rec --debug
+common_neighbors_node_rec --debug
 echo "*********************************************************"
+
+path_source_vec=$jaccard_source_vec
+path_dest_vec=$jaccard_dest_vec
+echo "embedding"
+jaccard_sampling --debug
+
+path_dest_vec="no_input_dest"
+echo "common_neighbors embedding node_rec"
+embedding_node_rec --debug
+
+echo "cocitation node_rec"
+jaccard_node_rec --debug
 
 echo "*********************************************************"
 path_source_vec=$aa_source_vec
