@@ -75,8 +75,8 @@ abstract class NodeRec extends JudgeBase {
                 if(neigh_test_graph.contains(rec[i][pp]))
                     _hit ++;
             }
-            System.out.printf("#predicate:%d, #truth:%d, hit:%d, rate:%f\n",
-                    _pred, _truth, _hit, 1.0 * _hit / _pred);
+            System.out.printf("#predicate:%d, nodeId: %d, #truth:%d, hit:%d, rate:%f\n",
+                    _pred, qvs[i], _truth, _hit, 1.0 * _hit / _pred);
             pred += _pred;
             truth += _truth;
             hit += _hit;
