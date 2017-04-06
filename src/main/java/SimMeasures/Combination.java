@@ -5,13 +5,13 @@ import java.util.LinkedList;
 
 public class Combination extends SimBase{
     PersonalizedPageRank ppr;
-    CoCitation coCitation;
+    CommonNeighbors commonNeighbors;
     Katz katz;
     SimRank simrank;
     int node_num;
     public Combination(LinkedList<Integer> []graph, int node_num){
         ppr = new PersonalizedPageRank(graph, node_num);
-        coCitation = new CoCitation(graph, node_num);
+        commonNeighbors = new CommonNeighbors(graph, node_num);
         katz = new Katz(graph, node_num);
         simrank = new SimRank(graph, node_num);
         this.node_num = node_num;
@@ -31,7 +31,7 @@ public class Combination extends SimBase{
          * This method needs a careful parameterization.
          */
         double rs[] = new double[node_num];
-        double rs_co[] = coCitation.singleSourceSim(qv);
+        double rs_co[] = commonNeighbors.singleSourceSim(qv);
         double rs_simrank[] = simrank.singleSourceSim(qv);
         double rs_katz[] = katz.singleSourceSim(qv);
         double rs_ppr[] = ppr.singleSourceSim(qv);

@@ -1,27 +1,26 @@
 package JudgeTools;
 
-import SimMeasures.CoCitation;
+import SimMeasures.CommonNeighbors;
 
 import java.io.IOException;
-import java.util.HashSet;
 
-public class CoCitationNodeRec extends NodeRec{
-    CoCitation coci;
-    public CoCitationNodeRec(String []argv) throws IOException{
+public class CommonNeighborsNodeRec extends NodeRec{
+    CommonNeighbors commonNeighbors;
+    public CommonNeighborsNodeRec(String []argv) throws IOException{
         super(argv);
-        coci = new CoCitation(
+        commonNeighbors = new CommonNeighbors(
                 hashsetArray2LinkedList(train_graph), node_num);
 
     }
 
     @Override
     double calculateScore(int from, int to) {
-        return coci.calculateSim(from, to);
+        return commonNeighbors.calculateSim(from, to);
     }
 
     @Override
     double[] singleSourceScore(int qv){
-        return coci.singleSourceSim(qv);
+        return commonNeighbors.singleSourceSim(qv);
     }
 
     public static void main(String[] args) throws IOException {
@@ -33,8 +32,8 @@ public class CoCitationNodeRec extends NodeRec{
         };
 
         if(JudgeBase.TEST_MODE)
-            new CoCitationNodeRec(argv).run();
+            new CommonNeighborsNodeRec(argv).run();
         else
-            new CoCitationNodeRec(args).run();
+            new CommonNeighborsNodeRec(args).run();
     }
 }

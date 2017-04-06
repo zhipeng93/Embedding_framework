@@ -349,31 +349,30 @@ abstract class SamplingFrameWork extends EmbeddingBase {
             int len = node_num / THREAD_NUM + 1;
             int start = threadId * len;
             int end = Math.min((threadId + 1) * len, node_num);
+            int cnt_picked;
+            double tmp_threshold;
             for(int i=start; i<end; i++){
                 double []rs = singleSourceSim(i);
+                cnt_picked = 0;
+                if(topk == 0) {//filter by threshold
+                    tmp_threshold = positive_threshold;
+                }
+                else{////filter by topk
+                    double tmp_rs[] = rs.clone();
+                    Arrays.sort(tmp_rs);
+                    tmp_threshold = Math.max(tmp_rs[tmp_rs.length - topk], 1e-20);
+                }
                 for(int j = 0; j< node_num; j++) {
-                    if(topk == 0) { //filter by threshold
-                        if (i == j || rs[j] < positive_threshold) {
-                            continue;
-                        } else {
-                            tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
-                        }
+                    if (i == j || rs[j] < tmp_threshold) {
+                        continue;
+                    } else {
+                        cnt_picked ++;
+                        tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
                     }
-                    else{//filter by topk
-                        PositiveEdge[] edges = new PositiveEdge[node_num];
-                        int idx = 0;
-                        for(int ei=0; ei < node_num; ei++){
-                            if(rs[ei] > positive_threshold / 100) {
-                                edges[idx ++] = new PositiveEdge(i, ei, rs[ei]);
-                            }
-                        }
-                        Arrays.sort(edges, 0, idx);
-                        int cnt = 0;
-                        while(cnt < topk && cnt < idx){
-                                tmp_positive_edges[threadId].add(edges[cnt ++]);
-                        }
-
-                    }
+                }
+                if(debug) {
+                    System.out.printf("node %d: picked: %d, out_deg: %d, threshold: %f\n",
+                            i, cnt_picked, train_graph[i].size(), tmp_threshold);
                 }
             }
         }

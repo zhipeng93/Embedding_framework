@@ -9,7 +9,8 @@ import EmbeddingTools.EmbeddingBase;
 public class Distributions{
     public static void main(String []args) throws IOException {
         String path_aa_dis = "simi/aa";
-        String path_cocitation_dis = "simi/cocitation";
+        String path_common_neighbors_dis = "simi/commonNeighbors";
+        String path_jaccard_dis = "simi/JaccardCoeff";
         String path_katz_dis = "simi/katz";
         String path_ppr_dis = "simi/ppr";
         String path_simrank_dis = "simi/simrank";
@@ -30,7 +31,8 @@ public class Distributions{
         }
 
         write_dis_to_disk(new AA(train_graph, node_num), qvs, path_aa_dis);
-        write_dis_to_disk(new CoCitation(train_graph, node_num), qvs, path_cocitation_dis);
+        write_dis_to_disk(new CommonNeighbors(train_graph, node_num), qvs, path_common_neighbors_dis);
+        write_dis_to_disk(new JaccardCoeff(train_graph, node_num), qvs, path_jaccard_dis);
         write_dis_to_disk(new Katz(train_graph, node_num),qvs, path_katz_dis);
         write_dis_to_disk(new PersonalizedPageRank(train_graph, node_num), qvs, path_ppr_dis);
         write_dis_to_disk(new SimRank(train_graph, node_num), qvs, path_simrank_dis);

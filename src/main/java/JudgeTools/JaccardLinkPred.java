@@ -1,22 +1,21 @@
 package JudgeTools;
 
-import SimMeasures.CoCitation;
+import SimMeasures.JaccardCoeff;
 
 import java.io.IOException;
-import java.util.HashSet;
 
-public class CoCitationLinkPred extends LinkPred{
+public class JaccardLinkPred extends LinkPred{
 
-    CoCitation coCitation;
-    public CoCitationLinkPred(String argv[]) throws IOException{
+    JaccardCoeff jaccardCoeff;
+    public JaccardLinkPred(String argv[]) throws IOException{
         super(argv);
-        coCitation = new CoCitation(
+        jaccardCoeff = new JaccardCoeff(
                 hashsetArray2LinkedList(train_graph), node_num);
     }
 
     @Override
     double calculateScore(int from, int to) {
-        return coCitation.calculateSim(from, to);
+        return jaccardCoeff.calculateSim(from, to);
     }
 
     public static void main(String []args) throws IOException{
@@ -29,9 +28,9 @@ public class CoCitationLinkPred extends LinkPred{
 
 
         if(JudgeBase.TEST_MODE)
-            new CoCitationLinkPred(argv).run();
+            new JaccardLinkPred(argv).run();
         else
-            new CoCitationLinkPred(args).run();
+            new JaccardLinkPred(args).run();
     }
 
 }

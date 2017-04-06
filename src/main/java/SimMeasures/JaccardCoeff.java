@@ -3,13 +3,13 @@ package SimMeasures;
 import java.util.LinkedList;
 
 /**
- * Here Co-citation is different from common neighbors, it's Jaccard coefficient,
+ * Jaccard coefficient,
  * J(i, j) = intersection(I_i, I_j) / union(I_i, I_j)
  */
-public class CoCitation extends SimBase{
+public class JaccardCoeff extends SimBase{
     int node_num;
     LinkedList<Integer> graph[];
-    public CoCitation(LinkedList<Integer> graph[], int node_num){
+    public JaccardCoeff(LinkedList<Integer> graph[], int node_num){
         this.node_num = node_num;
         this.graph = graph;
     }

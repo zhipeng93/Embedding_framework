@@ -1,21 +1,20 @@
 package EmbeddingTools;
 
 
-import SimMeasures.CoCitation;
-import SimMeasures.PersonalizedPageRank;
+import SimMeasures.CommonNeighbors;
 
 import java.io.IOException;
 
-public class CoCitationSampling extends SamplingFrameWork{
-    CoCitation coCitation;
-    public CoCitationSampling(String []argv) throws IOException{
+public class CommonNeighborsSampling extends SamplingFrameWork{
+    CommonNeighbors commonNeighbors;
+    public CommonNeighborsSampling(String []argv) throws IOException{
         super(argv);
-        coCitation = new CoCitation(train_graph, node_num);
+        commonNeighbors = new CommonNeighbors(train_graph, node_num);
 
     }
 
     double[] singleSourceSim(int qv){
-        return coCitation.singleSourceSim(qv);
+        return commonNeighbors.singleSourceSim(qv);
     }
 
 
@@ -34,8 +33,8 @@ public class CoCitationSampling extends SamplingFrameWork{
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new CoCitationSampling(argv).run();
+            new CommonNeighborsSampling(argv).run();
         else
-            new CoCitationSampling(args).run();
+            new CommonNeighborsSampling(args).run();
     }
 }
