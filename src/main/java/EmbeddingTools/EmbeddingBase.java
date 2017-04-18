@@ -105,11 +105,9 @@ abstract public class EmbeddingBase extends MyBase{
         /**
          * This is essential because the initial values are zeros.
          */
-
         for (int i = 0; i < w.length; i++) {
-            double[] tmp = w[i];
-            for (int j = 0; j < tmp.length; j++) {
-                tmp[j] = (random.nextDouble() - 0.5) / this.layer_size;
+            for (int j = 0; j < w[i].length; j++) {
+                w[i][j] = (random.nextDouble() - 0.5) / this.layer_size;
             }
         }
     }

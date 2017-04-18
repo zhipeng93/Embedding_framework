@@ -67,7 +67,6 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
         System.out.printf("threshold is %f\n", cut_threshold);
         for(int iter = 0; iter < ITER_NUM; iter ++) {
             sum_loss = 0;
-//            rio -= 0.001;
             for (int i = 0; i < node_num; i++) {
                 double sim[] = singleSourceScore(i);//source[i] * dest[j] = sim[j]
                 for (int j = 0; j < node_num; j++) {
@@ -77,6 +76,7 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
                     else {
                         double norm_score = Math.log(sim[j] * node_num / neg);
                         mfSgd(source_vec[i], dest_vec[j], norm_score);
+//                        mfSgd(source_vec[i], dest_vec[j], sim[j]);
                     }
                 }
             }
@@ -87,14 +87,24 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
     abstract double []singleSourceScore(int qv);
     void mfSgd(double s[], double t[], double value){
         /**
-         * min ||s * t - f||2, deriv(s) = 2 * tmp * t, deriv(t) = 2 * tmp * s
+         * min ||s * t - f||^2 + \lambda * (s^2 + t^2),
+         * deriv(s) = 2 * part_gd * t + 2 * \lambda * s, deriv(t) = 2 * part_gd * s + 2 * \lambda * t
          */
-        double part_gd = 2 * (vecMultiVec(s, t) - value);
 
+        double lambda = 0.3; /* for regularization(grid search)*/
+        double st = vecMultiVec(s, t);
+        if(Double.isNaN(st)){
+            System.out.print("st is:" + st + "\n");
+        }
+//        int a;
+//        a = random.nextInt(1000);
+//        if (a > 998) {
+//            System.out.println("st is " + st);
+//        }
         for(int i = 0; i < layer_size; i++){
             double tmp = s[i];
-            s[i] -= part_gd * rio * t[i];
-            t[i] -= part_gd * rio * tmp;
+            s[i] -= rio * 2 * (t[i] * (st - value) + lambda * s[i]);
+            t[i] -= rio * 2 * (tmp * (st - value) + lambda * t[i]);
         }
 //         adam solution
 //        for(int i=0; i < layer_size; i++){
@@ -126,7 +136,8 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
 //        }
 //        beta2t *= beta2;
 //        beta1t *= beta1;
-        sum_loss += Math.pow(vecMultiVec(s, t) - value, 2);
+        sum_loss += Math.pow(vecMultiVec(s, t) - value, 2) +
+                lambda * (vecMultiVec(s, s) + vecMultiVec(t, t));
     }
 
 

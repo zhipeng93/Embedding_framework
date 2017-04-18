@@ -60,7 +60,7 @@ public class SgdMF extends MatrixFactorFramework{
                 "--layer_size", "64",
                 "--neg_sample", "5",
                 "--iter", "10",
-                "--learning_rate", "0.0005f",
+                "--learning_rate", "0.2f",
                 "--threshold", "0.01",
                 "--debug",
         };

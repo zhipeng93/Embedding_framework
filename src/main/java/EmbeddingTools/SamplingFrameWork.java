@@ -213,8 +213,8 @@ abstract class SamplingFrameWork extends EmbeddingBase {
 
     int sampleAnNegativeEdge(int root) {
         int y = random.nextInt(node_num);
-        while (positive_edges[root].contains(y))
-            y = random.nextInt(node_num);
+//        while (positive_edges[root].contains(y))
+//            y = random.nextInt(node_num);
         return y;
     }
 
