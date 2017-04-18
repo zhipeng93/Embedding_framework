@@ -84,8 +84,8 @@ abstract class NodeRec extends JudgeBase {
         double recall = 1.0 * hit / truth;
         double precision = 1.0 * hit / pred;
         double f1 = 2 * precision * recall / (precision + recall);
-        System.out.printf("%s Precision=%f, recall=%f, F1=%f (truth:%d, pred:%d, hit:%d)\n",
-                this.getClass(), precision, recall, f1, truth, pred, hit);
+        System.out.printf("%s Precision=%f\trecall=%f\tF1=%f\n", this.getClass(), precision, recall, f1);
+        System.out.printf("%s truth:\t%d\tpred:\t%d\thit:\t%d\n", this.getClass(), truth, pred, hit);
     }
 
     void run() throws IOException{

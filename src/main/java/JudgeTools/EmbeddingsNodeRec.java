@@ -20,10 +20,30 @@ public class EmbeddingsNodeRec extends NodeRec{
     public EmbeddingsNodeRec(String []argv) throws IOException{
         super(argv);
         source_vec = read_embeddings(path_source_vec);
-        if(is_directed_embedding())
+        normalize_matrix((source_vec));
+        if(is_directed_embedding()) {
             dest_vec = read_embeddings(path_dest_vec);
+            normalize_matrix(dest_vec);
+        }
     }
 
+    void normalize_matrix(double [][] vec){
+        /**
+         * normalize the embedded matrix such that can be cosine between vertex i and j.
+         */
+        for(int i=0; i < vec.length; i++){
+            double sum = 0;
+            for(int j=0; j< vec[i].length; j++){
+                sum += Math.pow(vec[i][j], 2);
+            }
+            double sqrt = Math.sqrt(sum);
+            if(sqrt > 1e-20) {
+                for (int j = 0; j < vec[i].length; j++) {
+                    vec[i][j] /= sqrt;
+                }
+            }
+        }
+    }
     boolean is_directed_embedding(){
         if(path_dest_vec.equals("") || path_dest_vec.equals(NO_DEST_VEC))
             return false;
