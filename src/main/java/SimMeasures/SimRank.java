@@ -1,11 +1,10 @@
 package SimMeasures;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class SimRank extends SimBase{
-    double decay_factor = 0.8;
+    double decay_factor = 1;
     int max_step = 5;
     int node_num;
     LinkedList<Integer> graph[];
