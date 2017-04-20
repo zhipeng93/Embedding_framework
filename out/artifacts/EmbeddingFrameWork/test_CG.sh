@@ -7,7 +7,7 @@ path_train_data=$input_dir/CG_train.edgelist
 
 neg_ratio=10 # used for link Predication
 topk=10 # used for node_recommendation
-topk_sampling=0
+topk_sampling=20
 threshold=0.01 # used for sampling. 1% of the node pairs are used.
 iter_num=1 # train iterations for sampling processes.
 thread_num=1 # num of threads for sampling based methods and calculating similarity scores.
