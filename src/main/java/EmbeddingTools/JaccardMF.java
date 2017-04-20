@@ -1,5 +1,6 @@
 package EmbeddingTools;
 
+import SimMeasures.JaccardCoeff;
 import SimMeasures.PersonalizedPageRank;
 
 import java.io.IOException;
@@ -23,18 +24,18 @@ import java.util.LinkedList;
  * The best for PPR is 0.73 for recall.
  * The best for APP is 0.68 for recall.
  */
-public class SgdMF extends MatrixFactorFramework{
-    PersonalizedPageRank ppr;
+public class JaccardMF extends MatrixFactorFramework{
+    JaccardCoeff jaccardCoeff;
     LinkedList<Integer> train_graph[];
-    public SgdMF(String []argv) throws IOException{
+    public JaccardMF(String []argv) throws IOException{
         super(argv);
         train_graph = readEdgeListFromDisk(path_train_data, node_num);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        jaccardCoeff = new JaccardCoeff(train_graph, node_num);
     }
 
     @Override
     double []singleSourceScore(int qv){
-        double tmp[] = ppr.singleSourceSim(qv);
+        double tmp[] = jaccardCoeff.singleSourceSim(qv);
 //        sppmi(tmp);
         return tmp;
     }
@@ -66,9 +67,9 @@ public class SgdMF extends MatrixFactorFramework{
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new SgdMF(argv).run();
+            new JaccardMF(argv).run();
         else
-            new SgdMF(args).run();
+            new JaccardMF(args).run();
 
     }
 

@@ -18,8 +18,10 @@ aa_source_vec=$output_dir/aa_source.vec
 aa_dest_vec=$output_dir/aa_dest.vec
 ppr_sampling_source_vec=$output_dir/ppr_sampling_source.vec
 ppr_sampling_dest_vec=$output_dir/ppr_sampling_dest.vec
-sgd_mf_source_vec=$output_dir/sgdmf_source.vec
-sgd_mf_dest_vec=$output_dir/sgdmf_dest.vec
+ppr_mf_source_vec=$output_dir/pprmf_source.vec
+ppr_mf_dest_vec=$output_dir/pprmf_dest.vec
+jaccard_mf_source_vec=$output_dir/jaccardmf_source.vec
+jaccard_mf_dest_vec=$output_dir/jaccardmf_dest.vec
 #group_info=$input_dir/flickr.group
 
 # Judge Tools
@@ -100,8 +102,11 @@ aa_sampling(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.AASampling --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold --thread_num $thread_num --topk $topk_sampling $1
 }
 
-sgd_mf(){
-    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.SgdMF --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold $1
+ppr_mf(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.PPRMF --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold $1
+}
+jaccard_mf(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar EmbeddingTools.JaccardMF --path_train_data $path_train_data --path_source_vec $path_source_vec --path_dest_vec $path_dest_vec --node_num $node_num --neg_sample 5 --layer_size 64 --iter $iter_num --learning_rate $learning_rate --threshold $threshold $1
 }
 # cd $EMBEDDING_HOME/deepwalk
 deepwalk(){

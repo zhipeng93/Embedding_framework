@@ -92,9 +92,9 @@ jaccard_node_rec --debug
 #echo "*********************************************************"
 
 #echo "*********************************************************"
-#path_source_vec=$sgd_mf_source_vec
-#path_dest_vec=$sgd_mf_dest_vec
-#sgd_mf
+#path_source_vec=$ppr_mf_source_vec
+#path_dest_vec=$ppr_mf_dest_vec
+#ppr_mf
 #path_dest_vec="no_input_dest"
 #embedding_node_rec
 #echo "*********************************************************"
