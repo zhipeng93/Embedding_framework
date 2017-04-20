@@ -1,20 +1,18 @@
 #! /bin/bash
 node_num=6301
-input_dir='input/PG'
-output_dir='output/PG'
-path_test_data=$input_dir/PG_test.edgelist
-path_train_data=$input_dir/PG_train.edgelist
+input_dir='input/CG'
+output_dir='output/CG'
+path_test_data=$input_dir/CG_test.edgelist
+path_train_data=$input_dir/CG_train.edgelist
 
 neg_ratio=10 # used for link Predication
 topk=10 # used for node_recommendation
-threshold=0.01 # used for sampling. 1% of the node pairs are used.
-iter_num=10 # train iterations for sampling processes.
 thread_num=16 # num of threads for sampling based methods and calculating similarity scores.
 learning_rate=0.02 # learning rate for sgdmf.
 
 topk_sampling=20 # used for sampling, for each node, use topk_sampling candidates for each node.
 threshold=0.0008 # used for sampling. 1% of the node pairs are used.
-iter_num=5 # train iterations for sampling processes.
+iter_num=3 # train iterations for sampling processes.
 . ./funcs.sh
 
 echo "*********************************************************"
@@ -26,7 +24,7 @@ path_dest_vec="no_input_dest"
 #embedding_node_rec --debug
 
 path_dest_vec=$katz_dest_vec
-ppr_sampling --debug
+katz_sampling --debug
 path_dest_vec="no_input_dest"
 embedding_node_rec --debug
 

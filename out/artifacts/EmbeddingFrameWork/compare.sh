@@ -63,8 +63,8 @@ embedding_node_rec --debug
 
 echo "cocitation node_rec"
 common_neighbors_node_rec --debug
-echo "*********************************************************"
 
+echo "*********************************************************"
 path_source_vec=$jaccard_source_vec
 path_dest_vec=$jaccard_dest_vec
 echo "embedding"
@@ -77,24 +77,24 @@ embedding_node_rec --debug
 echo "cocitation node_rec"
 jaccard_node_rec --debug
 
-echo "*********************************************************"
-path_source_vec=$aa_source_vec
-path_dest_vec=$aa_dest_vec
-echo "embedding"
-aa_sampling --debug
+#echo "*********************************************************"
+#path_source_vec=$aa_source_vec
+#path_dest_vec=$aa_dest_vec
+#echo "embedding"
+#aa_sampling --debug
 
-path_dest_vec="no_input_dest"
-echo "aa embedding node_rec"
-embedding_node_rec --debug
+#path_dest_vec="no_input_dest"
+#echo "aa embedding node_rec"
+#embedding_node_rec --debug
 
-echo "aa node_rec"
-aa_node_rec --debug
-echo "*********************************************************"
+#echo "aa node_rec"
+#aa_node_rec --debug
+#echo "*********************************************************"
 
-echo "*********************************************************"
-path_source_vec=$sgd_mf_source_vec
-path_dest_vec=$sgd_mf_dest_vec
-sgd_mf
-path_dest_vec="no_input_dest"
-embedding_node_rec
-echo "*********************************************************"
+#echo "*********************************************************"
+#path_source_vec=$sgd_mf_source_vec
+#path_dest_vec=$sgd_mf_dest_vec
+#sgd_mf
+#path_dest_vec="no_input_dest"
+#embedding_node_rec
+#echo "*********************************************************"
