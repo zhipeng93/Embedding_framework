@@ -8,8 +8,7 @@ public class JaccardNodeRec extends NodeRec{
     JaccardCoeff jaccardCoeff;
     public JaccardNodeRec(String []argv) throws IOException{
         super(argv);
-        jaccardCoeff = new JaccardCoeff(
-                hashsetArray2LinkedList(train_graph), node_num);
+        jaccardCoeff = new JaccardCoeff(train_graph, node_num);
 
     }
 

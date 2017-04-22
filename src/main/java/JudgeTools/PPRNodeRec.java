@@ -8,8 +8,7 @@ public class PPRNodeRec extends NodeRec {
     PersonalizedPageRank ppr;
     public PPRNodeRec(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(
-                hashsetArray2LinkedList(train_graph), node_num);
+        ppr = new PersonalizedPageRank(train_graph, node_num);
     }
 
 

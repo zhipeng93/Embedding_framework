@@ -1,18 +1,15 @@
 package JudgeTools;
 
 import SimMeasures.AA;
-import SimMeasures.CoCitation;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 public class AALinkPred extends LinkPred{
 
     AA aa;
     public AALinkPred(String argv[]) throws IOException{
         super(argv);
-        aa = new AA(
-                hashsetArray2LinkedList(train_graph), node_num);
+        aa = new AA(train_graph, node_num);
     }
 
     @Override

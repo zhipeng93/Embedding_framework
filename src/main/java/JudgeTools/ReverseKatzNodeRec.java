@@ -8,8 +8,7 @@ public class ReverseKatzNodeRec extends NodeRec{
     ReverseKatz reverseKatz;
     public ReverseKatzNodeRec(String []argv) throws IOException{
         super(argv);
-        reverseKatz = new ReverseKatz(hashsetArray2LinkedList(train_graph),
-                node_num);
+        reverseKatz = new ReverseKatz(train_graph, node_num);
     }
 
     double calculateScore(int from, int to){

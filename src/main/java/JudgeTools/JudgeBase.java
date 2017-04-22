@@ -56,26 +56,7 @@ abstract public class JudgeBase extends MyBase{
         }
         return result;
     }
-    public static HashSet<Integer>[] readEdgeListFromDisk(String path, int node_num)
-            throws NumberFormatException, IOException {
-        /**
-         graph is a hashmap, with key as vertexId, value as the adjList.
-         */
-        HashSet<Integer> graph[] = new HashSet[node_num];
-        for(int i=0; i < node_num; i++)
-            graph[i] = new HashSet<Integer>();
-        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] words = line.split("\\s+");
-            int from = Integer.parseInt(words[0]);
-            int to = Integer.parseInt(words[1]);
-            graph[from].add(to);
-        }
-        reader.close();
-        return graph;
-    }
 
     public static LinkedList<Integer> [] hashsetArray2LinkedList
             (HashSet<Integer> train_graph[]){

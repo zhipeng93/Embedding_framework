@@ -8,8 +8,7 @@ public class CommonNeighborsNodeRec extends NodeRec{
     CommonNeighbors commonNeighbors;
     public CommonNeighborsNodeRec(String []argv) throws IOException{
         super(argv);
-        commonNeighbors = new CommonNeighbors(
-                hashsetArray2LinkedList(train_graph), node_num);
+        commonNeighbors = new CommonNeighbors(train_graph, node_num);
 
     }
 

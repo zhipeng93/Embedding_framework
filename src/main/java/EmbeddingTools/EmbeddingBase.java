@@ -136,24 +136,6 @@ abstract public class EmbeddingBase extends MyBase{
         return true;
     }
 
-    public static LinkedList<Integer>[] readEdgeListFromDisk(String path, int node_num)
-            throws NumberFormatException, IOException {
-        LinkedList<Integer> graph[] = new LinkedList[node_num];
-        for (int i = 0; i < node_num; i++)
-            graph[i] = new LinkedList<Integer>();
-        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] words = line.split("\\s+");
-            int from = Integer.parseInt(words[0]);
-            int to = Integer.parseInt(words[1]);
-            graph[from].add(to);
-        }
-        reader.close();
-        return graph;
-    }
-
     public static ArrayList<Integer>[] readArrayListEdgeListFromDisk(String path, int node_num)
             throws NumberFormatException, IOException {
         ArrayList<Integer> graph[] = new ArrayList[node_num];

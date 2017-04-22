@@ -9,8 +9,7 @@ public class JaccardLinkPred extends LinkPred{
     JaccardCoeff jaccardCoeff;
     public JaccardLinkPred(String argv[]) throws IOException{
         super(argv);
-        jaccardCoeff = new JaccardCoeff(
-                hashsetArray2LinkedList(train_graph), node_num);
+        jaccardCoeff = new JaccardCoeff(train_graph, node_num);
     }
 
     @Override

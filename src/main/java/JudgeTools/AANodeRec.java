@@ -8,8 +8,7 @@ public class AANodeRec extends NodeRec{
     AA aa;
     public AANodeRec(String []argv) throws IOException{
         super(argv);
-        aa = new AA(
-                hashsetArray2LinkedList(train_graph), node_num);
+        aa = new AA(train_graph, node_num);
 
     }
 

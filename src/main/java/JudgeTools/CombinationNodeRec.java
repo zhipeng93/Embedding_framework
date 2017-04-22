@@ -9,8 +9,7 @@ public class CombinationNodeRec extends NodeRec{
     Combination combination;
     public CombinationNodeRec(String []argv) throws IOException{
         super(argv);
-        combination = new Combination(
-                hashsetArray2LinkedList(train_graph), node_num);
+        combination = new Combination(train_graph, node_num);
 
     }
 

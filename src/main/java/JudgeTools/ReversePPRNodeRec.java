@@ -8,8 +8,7 @@ public class ReversePPRNodeRec extends NodeRec {
     ReverseRootedPageRank rppr;
     public ReversePPRNodeRec(String []argv) throws IOException{
         super(argv);
-        rppr = new ReverseRootedPageRank(
-                hashsetArray2LinkedList(train_graph), node_num);
+        rppr = new ReverseRootedPageRank(train_graph, node_num);
     }
 
 

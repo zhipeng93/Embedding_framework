@@ -16,7 +16,7 @@ abstract class NodeRec extends JudgeBase {
     @Parameter(names = "--topk", description = "number of recommendations for each node")
     int topk;
 
-    HashSet<Integer> train_graph[], test_graph[];
+    LinkedList<Integer> train_graph[], test_graph[];
 
     int qvs[]; // records the query nodes, i.e., qvs[i] is the i-th query node
     int rec[][]; // rec[i][*] is the node recommended for qvs[i]
@@ -67,14 +67,18 @@ abstract class NodeRec extends JudgeBase {
         int _pred = 0, _truth = 0, _hit = 0; //local
         for(int i=0; i< qvs.length;i++){
             _pred = topk;
-            Set<Integer> neigh_test_graph = test_graph[qvs[i]];
+            LinkedList<Integer> neigh_test_graph = test_graph[qvs[i]];
             _truth = neigh_test_graph.size();
 
             _hit = 0;
-            for(int pp = 0; pp < _pred; pp ++){
-                if(neigh_test_graph.contains(rec[i][pp]))
-                    _hit ++;
-            }
+            /* compute the intersection of the test graph and the recommended nodes.
+             * Both are lists
+             */
+            _hit += computeIntersection(neigh_test_graph, rec[i]);
+//            for(int pp = 0; pp < _pred; pp ++){
+//                if(neigh_test_graph.contains(rec[i][pp]))
+//                    _hit ++;
+//            }
             System.out.printf("#predicate:%d, nodeId: %d, #truth:%d, hit:%d, rate:%f\n",
                     _pred, qvs[i], _truth, _hit, 1.0 * _hit / _pred);
             pred += _pred;
@@ -88,6 +92,31 @@ abstract class NodeRec extends JudgeBase {
         System.out.printf("%s truth:\t%d\tpred:\t%d\thit:\t%d\n", this.getClass(), truth, pred, hit);
     }
 
+    int computeIntersection(LinkedList<Integer> list, int []pred){
+        int []a = new int[list.size()];
+        int idx = 0;
+        Iterator iter = list.iterator();
+        while(iter.hasNext()){
+            a[idx ++] = (Integer) iter.next();
+        }
+        Arrays.sort(a);
+        Arrays.sort(pred);
+
+        int ida=0, idb = 0, inter_size = 0;
+        while(ida < a.length && idb < pred.length){
+            if(a[ida] < pred[idb])
+                ida ++;
+            else if(a[ida] > pred[idb])
+                idb ++;
+            else{
+                inter_size ++;
+                ida ++;
+                idb ++;
+            }
+        }
+        return inter_size;
+
+    }
     void run() throws IOException{
         long start, end;
         start = System.nanoTime();

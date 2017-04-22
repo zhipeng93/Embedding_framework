@@ -17,7 +17,7 @@ abstract class LinkPred extends JudgeBase{
             description = "ratio of negative samples and test data: #(negative_samples) / #(test_sample)")
     protected double neg_ratio = 3;
 
-    HashSet<Integer> train_graph[], test_graph[];
+    LinkedList<Integer> train_graph[], test_graph[];
     public LinkPred(){}
 
     public LinkPred(String []argv) throws IOException{
@@ -29,7 +29,7 @@ abstract class LinkPred extends JudgeBase{
 
     abstract double calculateScore(int from, int to);
 
-    void addNegativeEdges(ArrayList<LineScore> line_score_list) {
+    void addNegativeEdges(LinkedList<LineScore> line_score_list) {
         /**
          * generate edges that do not exist in train_graph or test_graph and store the corresponding scores in
          * "line_score_list".
@@ -59,12 +59,12 @@ abstract class LinkPred extends JudgeBase{
         }
     }
 
-    void addPositiveEdges(ArrayList<LineScore> line_score_list) {
+    void addPositiveEdges(LinkedList<LineScore> line_score_list) {
         int from = 0, to = 0;
         double score;
         for(int i=0; i< node_num; i++){
             from = i;
-            Set<Integer> to_list = test_graph[from];
+            List<Integer> to_list = test_graph[from];
             Iterator iter = to_list.iterator();
             while (iter.hasNext()) {
                 to = (Integer) iter.next();
@@ -76,7 +76,7 @@ abstract class LinkPred extends JudgeBase{
 
     void calculateAUC()
             throws NumberFormatException, IOException {
-        ArrayList<LineScore> line_score_list = new ArrayList<LineScore>();
+        LinkedList<LineScore> line_score_list = new LinkedList<LineScore>();
         addNegativeEdges(line_score_list);
         addPositiveEdges(line_score_list);
 

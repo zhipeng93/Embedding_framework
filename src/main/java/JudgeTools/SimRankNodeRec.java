@@ -8,8 +8,7 @@ public class SimRankNodeRec extends NodeRec {
     SimRank simRank;
     public SimRankNodeRec(String []argv) throws IOException{
         super(argv);
-        simRank = new SimRank(
-                hashsetArray2LinkedList(train_graph), node_num);
+        simRank = new SimRank(train_graph, node_num);
     }
 
     @Override

@@ -9,8 +9,7 @@ public class CommonNeighborsLinkPred extends LinkPred{
     CommonNeighbors commonNeighbors;
     public CommonNeighborsLinkPred(String argv[]) throws IOException{
         super(argv);
-        commonNeighbors = new CommonNeighbors(
-                hashsetArray2LinkedList(train_graph), node_num);
+        commonNeighbors = new CommonNeighbors(train_graph, node_num);
     }
 
     @Override
