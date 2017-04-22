@@ -25,10 +25,8 @@ import java.util.LinkedList;
  */
 public class PPRMF extends MatrixFactorFramework{
     PersonalizedPageRank ppr;
-    LinkedList<Integer> train_graph[];
     public PPRMF(String []argv) throws IOException{
         super(argv);
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
         ppr = new PersonalizedPageRank(train_graph, node_num);
     }
 

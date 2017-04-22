@@ -26,10 +26,8 @@ import java.util.LinkedList;
  */
 public class JaccardMF extends MatrixFactorFramework{
     JaccardCoeff jaccardCoeff;
-    LinkedList<Integer> train_graph[];
     public JaccardMF(String []argv) throws IOException{
         super(argv);
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
         jaccardCoeff = new JaccardCoeff(train_graph, node_num);
     }
 

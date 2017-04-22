@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * perform matrix factorization on each different tasks to verify the correctness of my finding.
@@ -11,12 +12,14 @@ import java.util.Arrays;
 abstract class MatrixFactorFramework extends EmbeddingBase{
     public MatrixFactorFramework(String []argv) throws IOException{
         super(argv);
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
     }
     @Parameter(names = "--threshold", description = "threshold for sampling framework")
     protected static double threshold;
 
     static double sum_loss = 0;
 
+    LinkedList<Integer> train_graph[];
     /**
      * parameters for adam(a good solution for sgd)
      */
