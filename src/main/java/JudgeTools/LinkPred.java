@@ -17,14 +17,11 @@ abstract class LinkPred extends JudgeBase{
             description = "ratio of negative samples and test data: #(negative_samples) / #(test_sample)")
     protected double neg_ratio = 3;
 
-    LinkedList<Integer> train_graph[], test_graph[];
-    public LinkPred(){}
+    public LinkPred(){
+    }
 
     public LinkPred(String []argv) throws IOException{
         super(argv);
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
-        test_graph = readEdgeListFromDisk(path_test_data, node_num);
-
     }
 
     abstract double calculateScore(int from, int to);
@@ -45,10 +42,10 @@ abstract class LinkPred extends JudgeBase{
         while (k < neg_ratio * truth_num) {
             from = random.nextInt(node_num);
             to = random.nextInt(node_num);
-            if (train_graph[from].contains(to)) {
+            if (train_graph_ids[from].contains(to)) {
                 //(from, to) is in the train_graph
 
-            } else if (test_graph[from].contains(to)) {
+            } else if (test_graph_ids[from].contains(to)) {
                 //(from, to) is in the test_graph
             } else {
                 //(from, to) is an negative edge.
@@ -64,10 +61,11 @@ abstract class LinkPred extends JudgeBase{
         double score;
         for(int i=0; i< node_num; i++){
             from = i;
-            List<Integer> to_list = test_graph[from];
+            List<Edge> to_list = test_graph[from];
             Iterator iter = to_list.iterator();
             while (iter.hasNext()) {
-                to = (Integer) iter.next();
+                Edge tmp = (Edge) iter.next();
+                to = tmp.getTo();
                 score = calculateScore(from, to);
                 line_score_list.add(new LineScore(from, to, score, true));
             }

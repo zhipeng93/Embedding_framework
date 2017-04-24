@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 
-abstract public class MyBase{
+abstract public class MyBase {
     @Parameter(names = "--debug")
     public boolean debug = false;
 
@@ -20,22 +20,26 @@ abstract public class MyBase{
 
     public static boolean TEST_MODE = false;
     public static String NO_DEST_VEC = "no_input_dest";
-    public MyBase(){}
-    public MyBase(String argv[]){
+
+    public MyBase() {
+    }
+
+    public MyBase(String argv[]) {
         JCommander jCommander = new JCommander(this, argv);
-        if(this.help){
+        if (this.help) {
             jCommander.usage();
             return;
         }
     }
-    public static LinkedList<Integer>[] readEdgeListFromDisk(String path, int node_num)
+
+    public LinkedList<Edge>[] readEdgeListFromDisk(String path, int node_num)
             throws NumberFormatException, IOException {
         /**
          graph is an array of  linkedlist, with key as vertexId, value as the adjList.
          */
-        LinkedList<Integer> graph[] = new LinkedList[node_num];
-        for(int i=0; i < node_num; i++)
-            graph[i] = new LinkedList<Integer>();
+        LinkedList<Edge> graph[] = new LinkedList[node_num];
+        for (int i = 0; i < node_num; i++)
+            graph[i] = new LinkedList<Edge>();
         BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
 
         String line;
@@ -43,9 +47,14 @@ abstract public class MyBase{
             String[] words = line.split("\\s+");
             int from = Integer.parseInt(words[0]);
             int to = Integer.parseInt(words[1]);
-            graph[from].add(to);
+            int weight = 1;
+            if(words.length >= 3){
+                weight = Integer.parseInt(words[2]);
+            }
+            graph[from].add(new Edge(to, weight));
         }
         reader.close();
         return graph;
     }
+
 }

@@ -9,7 +9,6 @@ public class CommonNeighborsNodeRec extends NodeRec{
     public CommonNeighborsNodeRec(String []argv) throws IOException{
         super(argv);
         commonNeighbors = new CommonNeighbors(train_graph, node_num);
-
     }
 
     @Override
@@ -28,6 +27,7 @@ public class CommonNeighborsNodeRec extends NodeRec{
                 "--topk", "10",
                 "--debug",
                 "--node_num", "5242",
+                "--thread_num", "1",
         };
 
         if(JudgeBase.TEST_MODE)

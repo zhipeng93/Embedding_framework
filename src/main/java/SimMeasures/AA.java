@@ -1,5 +1,7 @@
 package SimMeasures;
 
+import JudgeTools.Edge;
+
 import java.util.LinkedList;
 
 /**
@@ -12,9 +14,9 @@ import java.util.LinkedList;
 public class AA extends SimBase{
     double _logd[];
     /* _logd[i] = 1 / log(deg(i))*/
-    LinkedList<Integer> graph[];
+    LinkedList<Edge> graph[];
     int node_num;
-    public AA(LinkedList<Integer> graph[], int node_num){
+    public AA(LinkedList<Edge> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
         _logd = new double[node_num];
@@ -32,8 +34,8 @@ public class AA extends SimBase{
     }
     @Override
     public double calculateSim(int from, int to){
-        int a[] = linkedList2Array(graph[from]);
-        int b[] = linkedList2Array(graph[to]);
+        int a[] = linkedList2Neighbors(graph[from]);
+        int b[] = linkedList2Neighbors(graph[to]);
         double sum = 0;
         /**
          * compute the intersection of a[] and b[], normalized by d[x]

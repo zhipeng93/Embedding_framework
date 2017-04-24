@@ -13,7 +13,6 @@ public class EmbeddingsNodeRec extends NodeRec{
             description = "path of dest_embedding_vecs, if not specified, this is a symmetric embedding")
     String path_dest_vec;
 
-
     double source_vec[][];
     double dest_vec[][];
 

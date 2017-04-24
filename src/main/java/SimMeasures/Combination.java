@@ -1,7 +1,7 @@
 package SimMeasures;
 
 import java.util.LinkedList;
-
+import JudgeTools.Edge;
 
 public class Combination extends SimBase{
     PersonalizedPageRank ppr;
@@ -12,7 +12,7 @@ public class Combination extends SimBase{
     SimRank simrank;
     JaccardCoeff jaccardCoeff;
     int node_num;
-    public Combination(LinkedList<Integer> []graph, int node_num){
+    public Combination(LinkedList<Edge> []graph, int node_num){
         ppr = new PersonalizedPageRank(graph, node_num);
         reverseKatz = new ReverseKatz(graph, node_num);
         reverseRootedPageRank = new ReverseRootedPageRank(graph, node_num);

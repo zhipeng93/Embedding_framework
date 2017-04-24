@@ -1,5 +1,7 @@
 package SimMeasures;
 
+import JudgeTools.Edge;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,16 +14,16 @@ public class Katz extends SimBase{
      * This is a paper.
      */
     double beta = 0.1;
-    LinkedList<Integer> reverseGraph[];
-    LinkedList<Integer> graph[];
+    LinkedList<Edge> reverseGraph[];
+    LinkedList<Edge> graph[];
     int ITER_NUM = 4;
     int node_num;
-    public Katz(LinkedList<Integer> graph[], int node_num){
+    public Katz(LinkedList<Edge> graph[], int node_num){
         this.graph = graph;
         this.reverseGraph = genReverseGraph(graph, node_num);
         this.node_num = node_num;
     }
-    public Katz(LinkedList<Integer> graph[], int node_num, double beta, int iter_num){
+    public Katz(LinkedList<Edge> graph[], int node_num, double beta, int iter_num){
         this(graph, node_num);
         this.beta = beta;
         this.ITER_NUM = iter_num;

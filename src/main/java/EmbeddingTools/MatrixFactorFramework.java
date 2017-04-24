@@ -1,5 +1,6 @@
 package EmbeddingTools;
 
+import JudgeTools.Edge;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ abstract class MatrixFactorFramework extends EmbeddingBase{
 
     static double sum_loss = 0;
 
-    LinkedList<Integer> train_graph[];
+    LinkedList<Edge> train_graph[];
     /**
      * parameters for adam(a good solution for sgd)
      */

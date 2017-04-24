@@ -1,5 +1,7 @@
 package SimMeasures;
 
+import JudgeTools.Edge;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,10 +12,10 @@ import java.util.LinkedList;
  */
 public class ReverseRootedPageRank extends SimBase{
     PersonalizedPageRank ppr;
-    public ReverseRootedPageRank(LinkedList<Integer> graph[], int node_num){
+    public ReverseRootedPageRank(LinkedList<Edge> graph[], int node_num){
         ppr = new PersonalizedPageRank(genReverseGraph(graph, node_num), node_num);
     }
-    public ReverseRootedPageRank(LinkedList<Integer> graph[], int node_num,
+    public ReverseRootedPageRank(LinkedList<Edge> graph[], int node_num,
                double restart_rate, int max_step){
         ppr = new PersonalizedPageRank(genReverseGraph(graph, node_num), node_num,
                 restart_rate, max_step);

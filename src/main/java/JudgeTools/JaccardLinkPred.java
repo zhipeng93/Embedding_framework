@@ -5,7 +5,6 @@ import SimMeasures.JaccardCoeff;
 import java.io.IOException;
 
 public class JaccardLinkPred extends LinkPred{
-
     JaccardCoeff jaccardCoeff;
     public JaccardLinkPred(String argv[]) throws IOException{
         super(argv);

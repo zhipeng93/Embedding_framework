@@ -10,7 +10,6 @@ public class CombinationNodeRec extends NodeRec{
     public CombinationNodeRec(String []argv) throws IOException{
         super(argv);
         combination = new Combination(train_graph, node_num);
-
     }
 
     @Override

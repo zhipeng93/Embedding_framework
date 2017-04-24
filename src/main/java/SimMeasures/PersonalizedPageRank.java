@@ -1,5 +1,7 @@
 package SimMeasures;
 
+import JudgeTools.Edge;
+
 import java.util.*;
 
 /**
@@ -11,7 +13,7 @@ import java.util.*;
  * p[i] = (1 - restart_rate) *\sum_{j \in :q(i)} { p[j] / out_degree[j] }
  */
 public class PersonalizedPageRank extends SimBase{
-    public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num){
+    public PersonalizedPageRank(LinkedList<Edge> graph[], int node_num){
         this.graph = graph;
         this.node_num = node_num;
         this.reversedGraph = genReverseGraph(graph, node_num);
@@ -21,16 +23,16 @@ public class PersonalizedPageRank extends SimBase{
         init_random_walk_table();
         init_pagerank();
     }
-    public PersonalizedPageRank(LinkedList<Integer> graph[], int node_num,
+    public PersonalizedPageRank(LinkedList<Edge> graph[], int node_num,
                double restart_rate, int max_step){
         this(graph, node_num);
         this.restart_rate = restart_rate;
         this.max_step = max_step;
     }
-    LinkedList<Integer> reversedGraph[];
+    LinkedList<Edge> reversedGraph[];
     int out_degree[];
     int in_degree[];
-    LinkedList<Integer> graph[];
+    LinkedList<Edge> graph[];
     int node_num;
     double restart_rate = 0.9;
     int max_step = 3;

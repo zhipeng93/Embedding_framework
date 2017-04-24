@@ -1,5 +1,7 @@
 package SimMeasures;
 
+import JudgeTools.Edge;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -7,14 +9,14 @@ public class SimRank extends SimBase{
     double decay_factor = 1;
     int max_step = 5;
     int node_num;
-    LinkedList<Integer> graph[];
-    LinkedList<Integer> reverse_graph[];
-    public SimRank(LinkedList<Integer> []graph, int node_num){
+    LinkedList<Edge> graph[];
+    LinkedList<Edge> reverse_graph[];
+    public SimRank(LinkedList<Edge> []graph, int node_num){
         this.graph = graph;
         this.node_num = node_num;
         reverse_graph = genReverseGraph(graph, node_num);
     }
-    public SimRank(LinkedList<Integer> []graph, int node_num,
+    public SimRank(LinkedList<Edge> []graph, int node_num,
                    int max_step, double decay_factor){
         this(graph, node_num);
         this.decay_factor = decay_factor;
@@ -48,11 +50,12 @@ public class SimRank extends SimBase{
                 if (temp == 0.0)
                     continue;
                 else {
-                    LinkedList<Integer> i_list = reverse_graph[i];
+                    LinkedList<Edge> i_list = reverse_graph[i];
                     int deg = i_list.size();
-                    Iterator<Integer> iter = i_list.iterator();
+                    Iterator<Edge> iter = i_list.iterator();
                     while (iter.hasNext()) {
-                        int _to = iter.next();
+                        Edge tmp = (Edge)iter.next();
+                        int _to = tmp.getTo();
                         u[l][_to] += temp * 1.0 / deg;
                     }
                 }
@@ -75,10 +78,11 @@ public class SimRank extends SimBase{
                 if (v[1 - (l & 1)][i] == 0)
                     continue;
                 else {
-                    LinkedList<Integer> i_list = graph[i];
+                    LinkedList<Edge> i_list = graph[i];
                     Iterator iter = i_list.iterator();
                     while (iter.hasNext()) {
-                        int to = (Integer) iter.next();
+                        Edge tmp = (Edge)iter.next();
+                        int to = tmp.getTo();
                         int deg = reverse_graph[to].size();
                         v[l & 1][to] += decay_factor * 1.0 / deg * v[1 - (1 & l)][i];
                     }

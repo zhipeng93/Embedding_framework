@@ -9,7 +9,6 @@ public class JaccardNodeRec extends NodeRec{
     public JaccardNodeRec(String []argv) throws IOException{
         super(argv);
         jaccardCoeff = new JaccardCoeff(train_graph, node_num);
-
     }
 
     @Override

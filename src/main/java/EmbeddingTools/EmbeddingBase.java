@@ -138,6 +138,9 @@ abstract public class EmbeddingBase extends MyBase{
 
     public static ArrayList<Integer>[] readArrayListEdgeListFromDisk(String path, int node_num)
             throws NumberFormatException, IOException {
+        /**
+         * used in APP embedding because it needs random walk.
+         */
         ArrayList<Integer> graph[] = new ArrayList[node_num];
         for (int i = 0; i < node_num; i++)
             graph[i] = new ArrayList<Integer>();

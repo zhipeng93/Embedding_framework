@@ -1,6 +1,7 @@
 package JudgeTools;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.IntegerConverter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,7 +17,8 @@ abstract class NodeRec extends JudgeBase {
     @Parameter(names = "--topk", description = "number of recommendations for each node")
     int topk;
 
-    LinkedList<Integer> train_graph[], test_graph[];
+
+    // for judging whether an edge exists in the train_graph
 
     int qvs[]; // records the query nodes, i.e., qvs[i] is the i-th query node
     int rec[][]; // rec[i][*] is the node recommended for qvs[i]
@@ -28,8 +30,6 @@ abstract class NodeRec extends JudgeBase {
          * in method(), each method should get prepared for the train_graph reading, reverse_graph, test_graph, etc.
          */
         super(argv);
-        train_graph = readEdgeListFromDisk(path_train_data, node_num);
-        test_graph = readEdgeListFromDisk(path_test_data, node_num);
     }
 
     abstract double calculateScore(int from, int to);
@@ -67,18 +67,14 @@ abstract class NodeRec extends JudgeBase {
         int _pred = 0, _truth = 0, _hit = 0; //local
         for(int i=0; i< qvs.length;i++){
             _pred = topk;
-            LinkedList<Integer> neigh_test_graph = test_graph[qvs[i]];
-            _truth = neigh_test_graph.size();
+            HashSet<Integer> neigh_test_graph_ids = test_graph_ids[qvs[i]];
+            _truth = neigh_test_graph_ids.size();
 
             _hit = 0;
-            /* compute the intersection of the test graph and the recommended nodes.
-             * Both are lists
-             */
-            _hit += computeIntersection(neigh_test_graph, rec[i]);
-//            for(int pp = 0; pp < _pred; pp ++){
-//                if(neigh_test_graph.contains(rec[i][pp]))
-//                    _hit ++;
-//            }
+            for(int pp = 0; pp < _pred; pp ++){
+                if(neigh_test_graph_ids.contains(rec[i][pp]))
+                    _hit ++;
+            }
             System.out.printf("#predicate:%d, nodeId: %d, #truth:%d, hit:%d, rate:%f\n",
                     _pred, qvs[i], _truth, _hit, 1.0 * _hit / _pred);
             pred += _pred;
@@ -92,31 +88,6 @@ abstract class NodeRec extends JudgeBase {
         System.out.printf("%s truth:\t%d\tpred:\t%d\thit:\t%d\n", this.getClass(), truth, pred, hit);
     }
 
-    int computeIntersection(LinkedList<Integer> list, int []pred){
-        int []a = new int[list.size()];
-        int idx = 0;
-        Iterator iter = list.iterator();
-        while(iter.hasNext()){
-            a[idx ++] = (Integer) iter.next();
-        }
-        Arrays.sort(a);
-        Arrays.sort(pred);
-
-        int ida=0, idb = 0, inter_size = 0;
-        while(ida < a.length && idb < pred.length){
-            if(a[ida] < pred[idb])
-                ida ++;
-            else if(a[ida] > pred[idb])
-                idb ++;
-            else{
-                inter_size ++;
-                ida ++;
-                idb ++;
-            }
-        }
-        return inter_size;
-
-    }
     void run() throws IOException{
         long start, end;
         start = System.nanoTime();
@@ -131,9 +102,6 @@ abstract class NodeRec extends JudgeBase {
             this.threadId = threadId;
         }
         public void run(){
-            /**
-             *
-             */
             int qv_num = qvs.length;
             int len = qv_num / THREAD_NUM + 1;
             int start = threadId * len;
@@ -141,9 +109,12 @@ abstract class NodeRec extends JudgeBase {
             for(int i=start; i<end; i++){
                 int qv_id = qvs[i];
                 double []rs = singleSourceScore(qv_id);
+
                 ArrayList<NodeScore> tmp_nodescore = new ArrayList<NodeScore>();
                 for(int xx =0; xx< node_num; xx++){
-                    if( (!train_graph[qv_id].contains(xx)) &&
+                    /* I mis-wrote train_graph_ids for train_graph, quite hard to find
+                    * the bugs. */
+                    if( (!train_graph_ids[qv_id].contains(xx)) &&
                             (xx != qv_id) )
                     tmp_nodescore.add(new NodeScore(xx, rs[xx]));
                 }

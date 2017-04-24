@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -14,9 +15,14 @@ import java.util.LinkedList;
  * if(train_graph[i].contains(j))
  */
 abstract public class JudgeBase extends MyBase{
-    public JudgeBase(String []argv){
+    public JudgeBase(String []argv) throws IOException{
         super(argv);
-        System.out.print(node_num + "\n");
+        train_graph = readEdgeListFromDisk(path_train_data, node_num);
+        test_graph = readEdgeListFromDisk(path_test_data, node_num);
+
+        /* generate the hashset of adjacency lists*/
+        train_graph_ids = linkedList2hashSet(train_graph);
+        test_graph_ids = linkedList2hashSet(test_graph);
     }
     public JudgeBase(){}
 
@@ -32,6 +38,9 @@ abstract public class JudgeBase extends MyBase{
     @Parameter(names = "--thread_num", description = "number of threads.")
     protected int THREAD_NUM;
 
+    LinkedList<Edge> train_graph[], test_graph[];
+    HashSet<Integer> train_graph_ids[], test_graph_ids[];
+
     public double vec_multi_vec(double[] vi, double[] vj) {
         int len = vi.length;
         double score = 0;
@@ -41,6 +50,21 @@ abstract public class JudgeBase extends MyBase{
         return score;
     }
 
+    HashSet<Integer>[] linkedList2hashSet(LinkedList<Edge> [] list){
+        int ll = list.length;
+        HashSet<Integer> [] rs = new HashSet[ll];
+        int idx = 0;
+        while(idx < ll){
+            rs[idx] = new HashSet<Integer>(10);
+            Iterator iter = list[idx].iterator();
+            while(iter.hasNext()){
+                Edge tmp = (Edge)iter.next();
+                rs[idx].add(tmp.getTo());
+            }
+            idx ++;
+        }
+        return rs;
+    }
     public static HashSet<Integer> getQueryNodes(String path) throws IOException {
         /**
          * return the nodes contained in the test_data.edgelist.
@@ -56,20 +80,6 @@ abstract public class JudgeBase extends MyBase{
         }
         return result;
     }
-
-
-    public static LinkedList<Integer> [] hashsetArray2LinkedList
-            (HashSet<Integer> train_graph[]){
-        /**
-         * I do not want to rewrite Set into ArrayList...
-         */
-        int size = train_graph.length;
-        LinkedList<Integer> rs[] = new LinkedList[size];
-        for(int i = 0; i < size; i ++)
-            rs[i] = new LinkedList<Integer>(train_graph[i]);
-        return rs;
-    }
-
 
     public static double[][] read_embeddings(String path)
             throws IOException {

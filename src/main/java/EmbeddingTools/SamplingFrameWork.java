@@ -1,5 +1,6 @@
 package EmbeddingTools;
 
+import JudgeTools.Edge;
 import com.beust.jcommander.Parameter;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ abstract class SamplingFrameWork extends EmbeddingBase {
      * In the sampling framework, we only need a sequential access of the adjlist.
      * So LinkedList is used.
      */
-    LinkedList<Integer> train_graph[];
+    LinkedList<Edge> train_graph[];
 
 
     public SamplingFrameWork(String[] argv) throws IOException {
