@@ -1,20 +1,18 @@
 package EmbeddingTools;
-
-
-import SimMeasures.PersonalizedPageRank;
+import SimMeasures.WeightedRPR;
 
 import java.io.IOException;
 
-public class PPRSampling extends SamplingFrameWork{
-    PersonalizedPageRank ppr;
-    public PPRSampling(String []argv) throws IOException{
+public class WRPRSampling extends SamplingFrameWork{
+    WeightedRPR weightedRPR;
+    public WRPRSampling(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        weightedRPR = new WeightedRPR(train_graph, node_num);
 
     }
 
     double[] singleSourceSim(int qv){
-        double rs [] = ppr.singleSourceSim(qv);
+        double rs [] = weightedRPR.singleSourceSim(qv);
 //        for(int i=0; i< node_num; i++)
 //            rs[i] *= train_graph[i].size();
         return rs;
@@ -36,8 +34,8 @@ public class PPRSampling extends SamplingFrameWork{
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new PPRSampling(argv).run();
+            new WRPRSampling(argv).run();
         else
-            new PPRSampling(args).run();
+            new WRPRSampling(args).run();
     }
 }

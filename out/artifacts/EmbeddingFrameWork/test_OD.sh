@@ -2,8 +2,8 @@
 node_num=2900
 input_dir='input/OD'
 output_dir='output/OD'
-path_test_data=$input_dir/OD.edgelist
-path_train_data=$input_dir/OD.edgelist
+path_test_data=$input_dir/OD_train.edgelist
+path_train_data=$input_dir/OD_test.edgelist
 
 neg_ratio=10 # used for link Predication
 topk=10 # used for node_recommendation

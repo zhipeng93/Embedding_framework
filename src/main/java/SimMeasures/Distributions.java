@@ -1,11 +1,10 @@
 package SimMeasures;
 
 import java.io.*;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.Random;
 
-import EmbeddingTools.EmbeddingBase;
 import JudgeTools.Edge;
 import JudgeTools.MyBase;
 
@@ -39,7 +38,7 @@ public class Distributions extends MyBase{
         write_dis_to_disk(new CommonNeighbors(train_graph, node_num), qvs, path_common_neighbors_dis);
         write_dis_to_disk(new JaccardCoeff(train_graph, node_num), qvs, path_jaccard_dis);
         write_dis_to_disk(new Katz(train_graph, node_num),qvs, path_katz_dis);
-        write_dis_to_disk(new PersonalizedPageRank(train_graph, node_num), qvs, path_ppr_dis);
+        write_dis_to_disk(new RootedPageRank(train_graph, node_num), qvs, path_ppr_dis);
         write_dis_to_disk(new SimRank(train_graph, node_num), qvs, path_simrank_dis);
 //        write_dis_to_disk(new PreferAttach(train_graph, node_num), qvs, path_preferAttach);
     }

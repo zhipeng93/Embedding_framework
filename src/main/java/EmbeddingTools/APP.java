@@ -19,7 +19,7 @@ import java.util.Random;
  * decreases. WHy?
  */
 
-public class PPREmbedding extends EmbeddingBase {
+public class APP extends EmbeddingBase {
     /**
      * parameters for APP
      */
@@ -37,7 +37,7 @@ public class PPREmbedding extends EmbeddingBase {
      * In this class, only arraylist_train_graph[] are used.
      */
     ArrayList<Integer> train_graph[];
-    public PPREmbedding(String []argv) throws IOException{
+    public APP(String []argv) throws IOException{
         super(argv);
         train_graph = readArrayListEdgeListFromDisk(path_train_data, node_num);
     }
@@ -70,10 +70,10 @@ public class PPREmbedding extends EmbeddingBase {
                 "--debug",
         };
         if(EmbeddingBase.TEST_MODE){
-            new PPREmbedding(argv).run();
+            new APP(argv).run();
         }
         else
-            new PPREmbedding(args).run();
+            new APP(args).run();
     }
     @Override
     void generateEmbeddings() throws IOException{

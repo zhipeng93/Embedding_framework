@@ -371,10 +371,10 @@ abstract class SamplingFrameWork extends EmbeddingBase {
                         tmp_positive_edges[threadId].add(new PositiveEdge(i, j, rs[j]));
                     }
                 }
-                if(debug) {
-                    System.out.printf("node %d: picked: %d, out_deg: %d, threshold: %f\n",
-                            i, cnt_picked, train_graph[i].size(), tmp_threshold);
-                }
+//                if(debug) {
+//                    System.out.printf("node %d: picked: %d, out_deg: %d, threshold: %f\n",
+//                            i, cnt_picked, train_graph[i].size(), tmp_threshold);
+//                }
             }
         }
     }

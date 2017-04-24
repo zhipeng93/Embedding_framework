@@ -1,6 +1,7 @@
 package EmbeddingTools;
 
-import SimMeasures.PersonalizedPageRank;
+
+import SimMeasures.RootedPageRank;
 import org.ejml.alg.dense.decomposition.svd.implicitqr.SvdImplicitQrAlgorithm;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.simple.SimpleMatrix;
@@ -11,17 +12,17 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 
 public class SvdMF extends MatrixFactorFramework{
-    PersonalizedPageRank ppr;
+    RootedPageRank rootedPageRank;
     public SvdMF(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        rootedPageRank = new RootedPageRank(train_graph, node_num);
         score = new double[node_num][node_num];
     }
 
     double score[][];
     @Override
     double[] singleSourceScore(int qv){
-        double sim[] = ppr.singleSourceSim(qv);
+        double sim[] = rootedPageRank.singleSourceSim(qv);
         normalize(sim);
         return sim;
     }
@@ -46,8 +47,8 @@ public class SvdMF extends MatrixFactorFramework{
         /* generate score[][] */
         double tmp[];
         for(int i = 0; i < node_num; i ++) {
-            tmp = ppr.singleSourceSim(i);
-            sppmi(ppr.singleSourceSim(i));
+            tmp = rootedPageRank.singleSourceSim(i);
+            sppmi(rootedPageRank.singleSourceSim(i));
             score[i] = tmp;
 
         }

@@ -4,9 +4,9 @@ import SimMeasures.ReverseRootedPageRank;
 
 import java.io.IOException;
 
-public class ReversePPRNodeRec extends NodeRec {
+public class ReverseRPRNodeRec extends NodeRec {
     ReverseRootedPageRank rppr;
-    public ReversePPRNodeRec(String []argv) throws IOException{
+    public ReverseRPRNodeRec(String []argv) throws IOException{
         super(argv);
         rppr = new ReverseRootedPageRank(train_graph, node_num);
     }
@@ -32,9 +32,9 @@ public class ReversePPRNodeRec extends NodeRec {
         };
 
         if(JudgeBase.TEST_MODE)
-            new ReversePPRNodeRec(argv).run();
+            new ReverseRPRNodeRec(argv).run();
         else
-            new ReversePPRNodeRec(args).run();
+            new ReverseRPRNodeRec(args).run();
     }
 
 }

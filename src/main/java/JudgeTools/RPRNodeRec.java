@@ -1,14 +1,15 @@
 package JudgeTools;
 
-import SimMeasures.PersonalizedPageRank;
+
+import SimMeasures.RootedPageRank;
 
 import java.io.IOException;
 
-public class PPRNodeRec extends NodeRec {
-    PersonalizedPageRank ppr;
-    public PPRNodeRec(String []argv) throws IOException{
+public class RPRNodeRec extends NodeRec {
+    RootedPageRank rootedPageRank;
+    public RPRNodeRec(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        rootedPageRank = new RootedPageRank(train_graph, node_num);
     }
 
 
@@ -26,7 +27,7 @@ public class PPRNodeRec extends NodeRec {
 //            rs[i] *= Math.pow(out_deg, 1.05);
 //        return rs;
 //        // this did not improve the effect.
-        return ppr.singleSourceSim(qv);
+        return rootedPageRank.singleSourceSim(qv);
     }
 
     public static void main(String[] args) throws IOException {
@@ -39,9 +40,9 @@ public class PPRNodeRec extends NodeRec {
         };
 
         if(JudgeBase.TEST_MODE)
-            new PPRNodeRec(argv).run();
+            new RPRNodeRec(argv).run();
         else
-            new PPRNodeRec(args).run();
+            new RPRNodeRec(args).run();
     }
 
 }

@@ -40,7 +40,8 @@ public class Katz extends SimBase{
                 Iterator iter = reverseGraph[i].iterator();
 
                 while(iter.hasNext()) {
-                    int neigh = (Integer) iter.next();
+                    Edge tmp = (Edge) iter.next();
+                    int neigh = tmp.getTo();
                     rs[kk & 1][i] += rs[1 - (kk & 1)][neigh];
                 }
                 rs[kk & 1][i] *= beta;
@@ -53,7 +54,9 @@ public class Katz extends SimBase{
              * is possibly an edge from v to u.
              */
             while(iterator.hasNext()){
-                rs[kk & 1][(Integer)iterator.next()] += 1 * beta;
+                Edge tmp = (Edge)iterator.next();
+                int neigh = tmp.getTo();
+                rs[kk & 1][neigh] += 1 * beta;
             }
 
         }

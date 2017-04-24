@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import JudgeTools.Edge;
 
 public class Combination extends SimBase{
-    PersonalizedPageRank ppr;
+    RootedPageRank rootedPageRank;
     ReverseKatz reverseKatz;
     ReverseRootedPageRank reverseRootedPageRank;
     CommonNeighbors commonNeighbors;
@@ -13,7 +13,7 @@ public class Combination extends SimBase{
     JaccardCoeff jaccardCoeff;
     int node_num;
     public Combination(LinkedList<Edge> []graph, int node_num){
-        ppr = new PersonalizedPageRank(graph, node_num);
+        rootedPageRank = new RootedPageRank(graph, node_num);
         reverseKatz = new ReverseKatz(graph, node_num);
         reverseRootedPageRank = new ReverseRootedPageRank(graph, node_num);
         commonNeighbors = new CommonNeighbors(graph, node_num);
@@ -43,7 +43,7 @@ public class Combination extends SimBase{
 //        normalize(rs_simrank);
         double rs_katz[] = katz.singleSourceSim(qv);
         normalize(rs_katz);
-        double rs_ppr[] = ppr.singleSourceSim(qv);
+        double rs_ppr[] = rootedPageRank.singleSourceSim(qv);
         normalize(rs_ppr);
 //        double rs_jacc[] = jaccardCoeff.singleSourceSim(qv);
 //        normalize(rs_jacc);

@@ -1,9 +1,8 @@
 package EmbeddingTools;
 
-import SimMeasures.PersonalizedPageRank;
+import SimMeasures.RootedPageRank;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  * The result is not as good as PPR. Also it's worse than APP.
@@ -23,16 +22,16 @@ import java.util.LinkedList;
  * The best for PPR is 0.73 for recall.
  * The best for APP is 0.68 for recall.
  */
-public class PPRMF extends MatrixFactorFramework{
-    PersonalizedPageRank ppr;
-    public PPRMF(String []argv) throws IOException{
+public class RPRMF extends MatrixFactorFramework{
+    RootedPageRank rootedPageRank;
+    public RPRMF(String []argv) throws IOException{
         super(argv);
-        ppr = new PersonalizedPageRank(train_graph, node_num);
+        rootedPageRank = new RootedPageRank(train_graph, node_num);
     }
 
     @Override
     double []singleSourceScore(int qv){
-        double tmp[] = ppr.singleSourceSim(qv);
+        double tmp[] = rootedPageRank.singleSourceSim(qv);
 //        sppmi(tmp);
         return tmp;
     }
@@ -64,9 +63,9 @@ public class PPRMF extends MatrixFactorFramework{
         };
 
         if(EmbeddingBase.TEST_MODE)
-            new PPRMF(argv).run();
+            new RPRMF(argv).run();
         else
-            new PPRMF(args).run();
+            new RPRMF(args).run();
 
     }
 
