@@ -1,10 +1,7 @@
 package EmbeddingTools;
 
 import SimMeasures.JaccardCoeff;
-import SimMeasures.PersonalizedPageRank;
-
 import java.io.IOException;
-import java.util.LinkedList;
 
 /**
  * The result is not as good as PPR. Also it's worse than APP.

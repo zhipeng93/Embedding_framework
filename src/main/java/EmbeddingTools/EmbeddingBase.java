@@ -174,7 +174,7 @@ abstract public class EmbeddingBase extends MyBase{
         for (int i = 0; i < embeddings.length; i++) {
             f.write(i + " ");
             for (int j = 0; j < embeddings[i].length; j++) {
-                f.write(embeddings[i][j] + " ");
+                f.write((float)embeddings[i][j] + " ");
             }
             f.write("\r\n");
         }
