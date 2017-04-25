@@ -30,8 +30,8 @@ public class WeightedRPR extends SimBase{
     int out_weight[];
     LinkedList<Edge> graph[];
     int node_num;
-    double restart_rate = 0.9;
-    int max_step = 3;
+    double restart_rate = 5;
+    int max_step = 5;
 
     @Override
     public double[] singleSourceSim(int qv){

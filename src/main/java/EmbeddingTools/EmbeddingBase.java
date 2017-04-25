@@ -148,6 +148,8 @@ abstract public class EmbeddingBase extends MyBase{
 
         String line;
         while ((line = reader.readLine()) != null) {
+            if (line.startsWith("#"))
+                continue;
             String[] words = line.split("\\s+");
             int from = Integer.parseInt(words[0]);
             int to = Integer.parseInt(words[1]);
