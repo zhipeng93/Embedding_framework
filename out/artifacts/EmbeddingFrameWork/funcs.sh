@@ -25,7 +25,11 @@ jaccard_mf_dest_vec=$output_dir/jaccardmf_dest.vec
 wrpr_sampling_source_vec=$output_dir/wrpr_source.vec
 wrpr_sampling_dest_vec=$output_dir/wrpr_dest.vec
 #group_info=$input_dir/flickr.group
-
+rpr_simi_out_dir=$output_dir/rpr_simi.arrays
+# compute n*n matrix
+rpr_simi(){
+    java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar Compute.CRootedPageRank --path_train_data $path_train_data --path_simi $path_simi --node_num $node_num --thread_num $thread_num $1
+}
 # Judge Tools
 embedding_link_pred(){
     java -cp EmbeddingFrameWork.jar:jcommander-1.60.jar:ejml-0.25.jar JudgeTools.EmbeddingsLinkPred --path_train_data $path_train_data --path_test_data $path_test_data --path_source_vec $path_source_vec --node_num $node_num --path_dest_vec $path_dest_vec --negative_ratio $neg_ratio $1
