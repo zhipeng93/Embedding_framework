@@ -43,16 +43,24 @@ abstract public class MyBase {
         BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
 
         String line;
+        int from, to, weight;
         while ((line = reader.readLine()) != null) {
             if(line.startsWith("#"))
                 continue;
             String[] words = line.split("\\s+");
-            int from = Integer.parseInt(words[0]);
-            int to = Integer.parseInt(words[1]);
-            int weight = 1;
-            if(words.length >= 3){
-                weight = Integer.parseInt(words[2]);
+            if(words.length == 3){
+                // weighted graph
+                weight = Integer.parseInt(words[0]);
+                from = Integer.parseInt(words[1]);
+                to = Integer.parseInt(words[2]);
             }
+            else{
+                // unweighted graph
+                from = Integer.parseInt(words[0]);
+                to = Integer.parseInt(words[1]);
+                weight = 1;
+            }
+
             graph[from].add(new Edge(to, weight));
         }
         reader.close();
