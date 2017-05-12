@@ -49,28 +49,25 @@ public abstract class ComputeBase extends MyBase{
                 e.printStackTrace();
             }
         }
-        write_array_to_disk(simi_path, sim);
+        write_csr_to_disk(simi_path, sim);
     }
     public abstract double[] singleSourceSim(int qv);
 
-    public static void write_array_to_disk(String path, double[][] embeddings)
+    public static void write_csr_to_disk(String path, double[][] simi)
             throws IOException {
         /**
-         * the embeddings files has the form of:
-         *  Node_num layer_size
-         *  node_id embedding_vectors\n
-         *  ...
+         * the simi file contains many lines, each line is: row col data\n.
          */
         BufferedWriter f = new BufferedWriter(new FileWriter(path));
-        int node_num = embeddings.length;
-        int layer_size = embeddings[0].length;
-        f.write(node_num + " " + layer_size + "\n");
-        for (int i = 0; i < embeddings.length; i++) {
-            f.write(i + " ");
-            for (int j = 0; j < embeddings[i].length; j++) {
-                f.write((float)embeddings[i][j] + " ");
+        double threshold = 1e-15;
+        int node_num = simi.length;
+        int layer_size = simi[0].length;
+        for(int i = 0; i< node_num; i++){
+            for (int j = 0; j < layer_size; j++){
+                if(simi[i][j] > threshold){
+                    f.write(i + " " + j + " " + (float)simi[i][j] + "\n");
+                }
             }
-            f.write("\r\n");
         }
         f.flush();
         f.close();

@@ -47,7 +47,7 @@ abstract public class MyBase {
         while ((line = reader.readLine()) != null) {
             if(line.startsWith("#"))
                 continue;
-            String[] words = line.split("\\s+");
+            String[] words = line.trim().split("\\s+");
             if(words.length == 3){
                 // weighted graph
                 weight = Integer.parseInt(words[0]);

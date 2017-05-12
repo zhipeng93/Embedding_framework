@@ -95,8 +95,9 @@ public class RootedPageRank extends SimBase{
                 while (iter.hasNext()) {
                     Edge tmp = (Edge) iter.next();
                     int tmp_j = tmp.getTo();
+                    int weight_j = tmp.getWeight();
                     // (j, i) is in the original graph, i.e., train_graph
-                    p[1 - (step & 1)][i] += (1- restart_rate) * p[step & 1][tmp_j] * 1.0
+                    p[1 - (step & 1)][i] += weight_j * (1 - restart_rate) * p[step & 1][tmp_j] * 1.0
                             / out_degree[tmp_j];
                 }
             }
@@ -120,8 +121,12 @@ public class RootedPageRank extends SimBase{
 
     void init_out_degree_table(){
         out_degree = new int[node_num];
-        for(int i = 0; i < node_num; i++)
-            out_degree[i] = graph[i].size();
+        for(int i = 0; i < node_num; i++) {
+            Iterator iterator = graph[i].iterator();
+            while(iterator.hasNext()) {
+                out_degree[i] += ((Edge)iterator.next()).getWeight();
+            }
+        }
     }
 //    void init_in_degree_table(){
 //        in_degree = new int[node_num];
