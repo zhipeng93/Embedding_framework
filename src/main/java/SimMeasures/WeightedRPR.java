@@ -13,25 +13,27 @@ import java.util.*;
  * p[i] = (1 - restart_rate) *\sum_{j \in :q(i)} { p[j] / out_degree[j] }
  */
 public class WeightedRPR extends SimBase{
-    public WeightedRPR(LinkedList<Edge> graph[], int node_num){
-        this.graph = graph;
-        this.node_num = node_num;
-        this.reversedGraph = genReverseGraph(graph, node_num);
-        init_out_weight_table();
+    public WeightedRPR(){
 
     }
     public WeightedRPR(LinkedList<Edge> graph[], int node_num,
                double restart_rate, int max_step){
-        this(graph, node_num);
+        this.graph = graph;
+        this.node_num = node_num;
+        this.reversedGraph = genReverseGraph(graph, node_num);
+        init_out_weight_table();
         this.restart_rate = restart_rate;
         this.max_step = max_step;
+    }
+    public WeightedRPR(LinkedList<Edge> graph[], int node_num){
+        this(graph, node_num, 0.5, 5);
     }
     LinkedList<Edge> reversedGraph[];
     int out_weight[];
     LinkedList<Edge> graph[];
     int node_num;
-    double restart_rate = 5;
-    int max_step = 5;
+    double restart_rate;
+    int max_step;
 
     @Override
     public double[] singleSourceSim(int qv){

@@ -1,25 +1,30 @@
 package Compute;
 
 import JudgeTools.MyBase;
-import SimMeasures.RootedPageRank;
+import SimMeasures.WeightedRPR;
+import com.beust.jcommander.Parameter;
 
 
 import java.io.IOException;
 
 public class CRootedPageRank extends ComputeBase{
-    RootedPageRank rpr;
+    WeightedRPR weightedRPR;
+    @Parameter(names = "--restart_rate")
+    protected float restart_rate;
+    @Parameter(names = "--max_step")
+    protected int max_step;
     public CRootedPageRank(String []argv) throws IOException{
         super(argv);
-        rpr = new RootedPageRank(weighted_graph, node_num);
+        weightedRPR = new WeightedRPR(weighted_graph, node_num, restart_rate, max_step);
     }
     public double[] singleSourceSim(int qv){
-        return rpr.singleSourceSim(qv);
+        return weightedRPR.singleSourceSim(qv);
     }
 
     public static void main(String []args) throws IOException{
-        String argv[] = {"--path_train_data", "data/arxiv_adj_train.edgelist",
+        String argv[] = {"--path_train_data", "data/toy.edgelist",
                 "--path_simi", "data/rpr.simi",
-                "--node_num", "5242",
+                "--node_num", "6",
                 "--thread_num", "2",
                 "--debug"
         };

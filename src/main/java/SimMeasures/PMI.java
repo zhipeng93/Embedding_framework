@@ -14,7 +14,7 @@ public class PMI extends SimBase{
     LinkedList<Edge> graph[];
     float cds;
     int out_degree[];
-    float in_degree[]; // x = pow(x, cds)
+    double in_degree[]; // x = pow(x, cds)
     double sum_total;
     public PMI(LinkedList<Edge> graph[], int node_num, float cds){
         this.node_num = node_num;
@@ -25,7 +25,7 @@ public class PMI extends SimBase{
 
     void init_degree_table(){
         out_degree = new int[node_num];
-        in_degree = new float[node_num];
+        in_degree = new double[node_num];
         for(int i = 0; i < node_num; i++) {
             Iterator iterator = graph[i].iterator();
             while(iterator.hasNext()) {
@@ -33,11 +33,15 @@ public class PMI extends SimBase{
                 int _to = tmp.getTo();
                 int _weight = tmp.getWeight();
                 out_degree[i] += _weight;
-                in_degree[_to] += Math.pow(_weight, cds);
+//                in_degree[_to] += Math.pow(_weight, cds);
+                in_degree[_to] += _weight;
             }
         }
-        for(int i=0; i< node_num; i++)
+        for(int i=0; i< node_num; i++) {
+            in_degree[i] = Math.pow(in_degree[i], cds);
             sum_total += in_degree[i];
+        }
+        sum_total /= 2;
     }
 
     @Override

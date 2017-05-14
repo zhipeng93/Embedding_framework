@@ -59,11 +59,13 @@ public abstract class ComputeBase extends MyBase{
          * the simi file contains many lines, each line is: row col data\n.
          */
         BufferedWriter f = new BufferedWriter(new FileWriter(path));
-        double threshold = 1e-15;
+        double threshold = 1e-6;
         int node_num = simi.length;
         int layer_size = simi[0].length;
         for(int i = 0; i< node_num; i++){
             for (int j = 0; j < layer_size; j++){
+                if(j == i)
+                    continue;
                 if(simi[i][j] > threshold){
                     f.write(i + " " + j + " " + (float)simi[i][j] + "\n");
                 }

@@ -1,22 +1,25 @@
 package Compute;
 
 import JudgeTools.MyBase;
+import SimMeasures.Bayes;
 import SimMeasures.PMI;
 import com.beust.jcommander.Parameter;
 
 
 import java.io.IOException;
 
-public class CPMI extends ComputeBase{
-    @Parameter(names = "--cds")
-    protected float cds;
-    PMI pmi;
-    public CPMI(String []argv) throws IOException{
+public class CBayes extends ComputeBase{
+    @Parameter(names = "--restart_rate")
+    protected float restart_rate;
+    @Parameter(names = "--max_step")
+    protected int max_step;
+    Bayes bayes;
+    public CBayes(String []argv) throws IOException{
         super(argv);
-        pmi = new PMI(weighted_graph, node_num, cds);
+        bayes = new Bayes(weighted_graph, node_num, restart_rate, max_step);
     }
     public double[] singleSourceSim(int qv){
-        return pmi.singleSourceSim(qv);
+        return bayes.singleSourceSim(qv);
     }
 
     public static void main(String []args) throws IOException{
@@ -24,14 +27,16 @@ public class CPMI extends ComputeBase{
                 "--path_simi", "data/rpr.simi",
                 "--node_num", "6",
                 "--thread_num", "1",
-                "--cds", "1",
+                "--restart_rate", "0",
+                "--max_step", "1",
         };
 
         if(MyBase.TEST_MODE)
-            new CPMI(argv).run();
+            new CBayes(argv).run();
         else
-            new CPMI(args).run();
-//        double []res = new CPMI(argv).singleSourceSim(0);
+            new CBayes(args).run();
+
+//        double res[] = new CBayes(argv).singleSourceSim(0);
 //        for(int i = 0; i< res.length; i++)
 //            System.out.print(res[i] + " ");
 //        System.out.print("\n");
