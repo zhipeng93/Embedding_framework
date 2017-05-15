@@ -19,7 +19,7 @@ public class Bayes extends WeightedRPR{
         sum_total = 0;
         for(int i=0; i < node_num; i++)
             sum_total += out_weight[i];
-        sum_total /= 2;
+//        sum_total /= 2;
     }
 
     float sum_total;
