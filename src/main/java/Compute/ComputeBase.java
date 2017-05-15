@@ -59,7 +59,7 @@ public abstract class ComputeBase extends MyBase{
          * the simi file contains many lines, each line is: row col data\n.
          */
         BufferedWriter f = new BufferedWriter(new FileWriter(path));
-        double threshold = 1e-6;
+        double threshold = 1; // ppmi
         int node_num = simi.length;
         int layer_size = simi[0].length;
         for(int i = 0; i< node_num; i++){
