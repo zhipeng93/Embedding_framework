@@ -5,12 +5,7 @@ import JudgeTools.Edge;
 import java.util.*;
 
 /**
- * THIS is ROOTED PageRank, not a Personalized PageRank. Maybe a *special case*.
- * This is a class to compute personalize PageRank, the restart_rate and
- * max_step is specified in this file, also, users can set them via the
- * constructor.
- * If walk starts from node *root*, then p[i], i\neq root, p[i] is computed as:
- * p[i] = (1 - restart_rate) *\sum_{j \in :q(i)} { p[j] / out_degree[j] }
+ * This can only be used in Bayes. Actually this class sets restart_rate=0; but sums the probability of each step.
  */
 public class WeightedRPR extends SimBase{
     public WeightedRPR(){
@@ -38,6 +33,8 @@ public class WeightedRPR extends SimBase{
     @Override
     public double[] singleSourceSim(int qv){
         double p[][] = new double[2][node_num];
+        double result[] = new double[node_num];
+
         p[0][qv] = 1;
         for (int step = 0; step < max_step; step++) {
             //use p[step & 1] to update p[1 - (step & 1)]
@@ -47,6 +44,8 @@ public class WeightedRPR extends SimBase{
                 while (iter.hasNext()) {
                     Edge tmp = (Edge) iter.next();
                     int tmp_j = tmp.getTo();
+                    if(p[step & 1][tmp_j] < 1e-5) /* \accelerate computing via some approximation.*/
+                        continue;
                     int tmp_weight = tmp.getWeight();
                     // (tmp_j, i) is in the original graph, i.e., train_graph
                     p[1 - (step & 1)][i] += (1- restart_rate) * p[step & 1][tmp_j] * tmp_weight
@@ -54,9 +53,11 @@ public class WeightedRPR extends SimBase{
                 }
             }
             p[1 - (step & 1)][qv] += restart_rate;
+            for(int i = 0; i < node_num; i ++)
+                result[i] += p[1 - (step & 1)][i];
         }
 
-        return p[max_step & 1];
+        return result;
     }
 
     /**

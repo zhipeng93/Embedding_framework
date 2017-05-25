@@ -36,8 +36,8 @@ public class RootedPageRank extends SimBase{
 //    int in_degree[];
 
     int node_num;
-    double restart_rate = 0.1;
-    int max_step = 3;
+    double restart_rate = 0.2;
+    int max_step = 5;
 //    double pagerank[][];
 //    int pagerank_iter = 10;
     /*store pagerank value for each node */
